@@ -5,7 +5,7 @@ from discord.ext.commands import has_permissions
 
 
 class Embedder:
-    """The embedder plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/embedder"""
+    """The embedder plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/embedder"""
 
     def __init__(self, bot):
         self.bot = bot

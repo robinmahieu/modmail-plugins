@@ -4,7 +4,7 @@ from discord.ext.commands import has_permissions
 
 
 class Autorole:
-    """The autorole plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/autorole"""
+    """The autorole plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/autorole"""
 
     def __init__(self, bot):
         self.bot = bot

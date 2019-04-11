@@ -8,9 +8,10 @@ To use this plugin, use this command in your Modmail server: `plugin add papiers
 
 ## Commands
 
-| name   | usage                  | example                                         | description     |
-|--------|------------------------|-------------------------------------------------|-----------------|
-| embed  | embed "Title" Message  | embed "Tourney Info" Checkout the new bracket!  | Sends an embed  |
+| name        | usage                  | example                                         | description         |
+|-------------|------------------------|-------------------------------------------------|---------------------|
+| embed       | embed "Title" Message  | embed "Tourney Info" Checkout the new bracket!  | Sends an embed      |
+| embedcolor  | embedcolor colorcode   | embedcolor #42f492                              | Sets an embedcolor  |
 
 > Make sure to put the title between double quotes!
 

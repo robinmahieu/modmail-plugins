@@ -1,5 +1,6 @@
 import datetime
 import discord
+import pyimgur
 import re
 from discord.ext import commands
 from discord.ext.commands import has_permissions
@@ -71,6 +72,22 @@ class Embedder:
             )
 
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+        if len(ctx.message.attachments) == 1:
+            try:
+                imgur = pyimgur.Imgur('0f032be3851849a')
+                image_url = ctx.message.attachments[0].url
+
+                uploaded_image = imgur.upload_image(url=image_url, title='Modmail')
+                embed.set_image(url=uploaded_image.link)
+
+            except Exception:
+                pass
+
+        elif len(ctx.message.attachments) > 1:
+            await ctx.message.delete()
+            error = await ctx.send('You can only use one image per embed.')
+            return await error.delete(5000)
 
         await ctx.send(embed=embed)
         await ctx.message.delete()

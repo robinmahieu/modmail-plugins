@@ -3,11 +3,15 @@ from discord.ext import commands
 
 
 class Supporters:
+    """The supporters plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/supporters"""
+
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(aliases=['helpers', 'supporters', 'supportmembers'])
     async def support(self, ctx):
+        """Sends an embed with all the support members."""
+
         channel_id = self.bot.config.get('log_channel_id')
         channel = ctx.guild.get_channel(int(channel_id))
 

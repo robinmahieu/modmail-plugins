@@ -12,16 +12,26 @@ class Supporters:
     async def support(self, ctx):
         """Sends an embed with all the support members."""
 
-        channel_id = self.bot.config.get('log_channel_id')
-        channel = ctx.guild.get_channel(int(channel_id))
+        category_id = self.bot.config.get('main_category_id')
+
+        categories = ctx.guild.categories
+
+        for c in categories:
+            if c.id != int(category_id):
+                continue
+            else:
+                category = c
 
         member_list = []
 
-        for member in channel.members:
-            if member.bot:
-                continue
+        for member in ctx.guild.members:
+            if member.permissions_in(category).read_messages:
+                if not member.bot:
+                    member_list.append(member.mention)
+                else:
+                    continue
             else:
-                member_list.append(member.mention)
+                continue
 
         embed = discord.Embed(
             title='Support Members',

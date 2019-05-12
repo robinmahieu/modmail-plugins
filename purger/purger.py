@@ -9,7 +9,7 @@ class Purger:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['delete'])
+    @commands.command()
     async def purge(self, ctx, amount: str = None):
         """Deletes the specified amount of messages."""
 

@@ -14,6 +14,9 @@ class Supporters:
 
         category_id = self.bot.config.get('main_category_id')
 
+        if category_id is None:
+            return await ctx.send('I couldn\'t find the modmail category.')
+
         categories = ctx.guild.categories
 
         for c in categories:

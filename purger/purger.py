@@ -2,8 +2,10 @@ import asyncio
 import discord
 from discord.ext import commands
 
+Cog = getattr(commands, 'Cog', object)
 
-class Purger:
+
+class Purger(Cog):
     """The purger plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/purger"""
 
     def __init__(self, bot):

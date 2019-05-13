@@ -2,8 +2,10 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 
+Cog = getattr(commands, 'Cog', object)
 
-class Autorole:
+
+class Autorole(Cog):
     """The autorole plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/autorole"""
 
     def __init__(self, bot):

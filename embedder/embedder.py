@@ -5,8 +5,10 @@ import re
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 
+Cog = getattr(commands, 'Cog', object)
 
-class Embedder:
+
+class Embedder(Cog):
     """The embedder plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/embedder"""
 
     def __init__(self, bot):

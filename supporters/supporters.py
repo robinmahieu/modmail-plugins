@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
 
+Cog = getattr(commands, 'Cog', object)
 
-class Supporters:
+
+class Supporters(Cog):
     """The supporters plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/supporters"""
 
     def __init__(self, bot):

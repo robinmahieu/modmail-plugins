@@ -3,7 +3,9 @@ import discord
 import pyimgur
 import re
 from discord.ext import commands
-from discord.ext.commands import has_permissions
+
+from core import checks
+from core.models import PermissionLevel
 
 Cog = getattr(commands, 'Cog', object)
 
@@ -16,7 +18,7 @@ class Embedder(Cog):
         self.db = bot.plugin_db.get_partition(self)
 
     @commands.command()
-    @has_permissions(manage_messages=True)
+    @checks.has_permissions(PermissionLevel.MODERATOR)
     async def embedcolor(self, ctx, colorcode: str = None):
         """Saves the colorcode and will use them in the next embeds."""
 
@@ -51,7 +53,7 @@ class Embedder(Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @has_permissions(manage_messages=True)
+    @checks.has_permissions(PermissionLevel.SUPPORTER)
     async def embed(self, ctx, title: str = None, *, message: str = None):
         """Sends an embed to the channel where you used the command."""
 

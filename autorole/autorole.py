@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import has_permissions
+
+from core import checks
+from core.models import PermissionLevel
 
 Cog = getattr(commands, 'Cog', object)
 
@@ -12,6 +14,7 @@ class Autorole(Cog):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
 
+    @Cog.listener()
     async def on_member_join(self, member):
         rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
 
@@ -22,7 +25,7 @@ class Autorole(Cog):
             await member.add_roles(role)
 
     @commands.command()
-    @has_permissions(administrator=True)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def setrole(self, ctx, rolename: str = None):
         """Sets the default role a member gets when joining."""
 
@@ -47,12 +50,13 @@ class Autorole(Cog):
         await ctx.send('I will now give that role to all new members!')
 
     @commands.command()
-    @has_permissions(administrator=True)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def giveroles(self, ctx, rolename: str = None):
         """Gives all members of the server this role"""
 
         if rolename is None:
             rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
+
             if rolename is None:
                 return await ctx.send('Please supply a role, or set one with the `setrole` command.')
 

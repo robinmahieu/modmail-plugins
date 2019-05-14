@@ -8,11 +8,11 @@ To use this plugin, use this command in your Modmail server: `plugin add papiers
 
 ## Commands
 
-| name         | aliases                            | example      | description                                     |
-|--------------|------------------------------------|--------------|-------------------------------------------------|
-| supporters   | helpers, support, supportmembers   | supporters   | Sends an embed with all of the support members  |
+| name         | aliases                            | example      | permission   | description                                     |
+|--------------|------------------------------------|--------------|--------------|-------------------------------------------------|
+| supporters   | helpers, support, supportmembers   | supporters   | Regular [0]  | Sends an embed with all of the support members  |
 
-> Altough this seems like the bot's doing this, it will **not** ping anyone!
+> Altough it seems like the bot's doing this, it will **not** ping anyone!
 
 ## Permissions
 

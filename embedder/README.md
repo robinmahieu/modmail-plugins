@@ -8,13 +8,13 @@ To use this plugin, use this command in your Modmail server: `plugin add papiers
 
 ## Commands
 
-| name        | usage                  | example                                         | description         |
-|-------------|------------------------|-------------------------------------------------|---------------------|
-| embed       | embed "Title" Message  | embed "Tourney Info" Checkout the new bracket!  | Sends an embed      |
-| embedcolor  | embedcolor colorcode   | embedcolor #42f492                              | Sets an embedcolor  |
+| name        | usage                  | example                                         | permission         | description         |
+|-------------|------------------------|-------------------------------------------------|--------------------|---------------------|
+| embed       | embed "Title" Message  | embed "Tourney Info" Checkout the new bracket!  | Supporter [1]  | Sends an embed      |
+| embedcolor  | embedcolor colorcode   | embedcolor #42f492                              | Moderator [3]  | Sets an embedcolor  |
 
 > Make sure to put the title between double quotes!
 
 ## Permissions
 
-The bot doesn't need additional permissions. Only users with the `manage messages` permission will be able to use this plugin.
+The bot doesn't need additional permissions.

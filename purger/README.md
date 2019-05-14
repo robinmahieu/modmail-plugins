@@ -8,9 +8,9 @@ To use this plugin, use this command in your Modmail server: `plugin add papiers
 
 ## Commands
 
-| name    | aliases  | usage          | example    | description                               |
-|---------|----------|----------------|------------|-------------------------------------------|
-| purge   | delete   | purge amount   | purge 10   | Deletes the provided amount of messages.  |
+| name    | usage          | example    | permission     | description                               |
+|---------|----------------|------------|----------------|-------------------------------------------|
+| purge   | purge amount   | purge 10   | Moderator [3]  | Deletes the provided amount of messages.  |
 
 ## Permissions
 

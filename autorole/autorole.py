@@ -14,15 +14,26 @@ class Autorole(Cog):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
 
-    @Cog.listener()
-    async def on_member_join(self, member):
-        rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
+    # I agree this is stupid, but this is the only way I found I could do it. If you have a better idea, please create an issue or PR.
+    if discord.__version__ == '1.0.0a':
+        async def on_member_join(self, member):
+            rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
 
-        if rolename is None:
-            return
-        else:
-            role = discord.utils.get(member.guild.roles, name=rolename)
-            await member.add_roles(role)
+            if rolename is None:
+                return
+            else:
+                role = discord.utils.get(member.guild.roles, name=rolename)
+                await member.add_roles(role)
+    else:
+        @Cog.listener()
+        async def on_member_join(self, member):
+            rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
+
+            if rolename is None:
+                return
+            else:
+                role = discord.utils.get(member.guild.roles, name=rolename)
+                await member.add_roles(role)
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)

@@ -34,7 +34,7 @@ async def handle_message(self, message):
         level = int(new_exp ** (1/4))
 
         if person['level'] < level:
-            await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level **{str(level)}**!')
+            await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level {str(level)}!')
             await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level, 'name': message.author.name}})
         else:
             await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'name': message.author.name}})
@@ -56,8 +56,17 @@ class Leveling(Cog):
             await handle_message(self, message)
 
     @commands.group(name='level', invoke_without_command=True)
-    async def level(self, ctx, user: discord.User = None):
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def level(self, ctx):
         '''Leveling makes it easy for you to keep track of active members.'''
+
+        cmd = self.bot.get_command('help')
+        await ctx.invoke(cmd, command='level')
+
+    @level.command(name='info')
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def info(self, ctx, user: discord.User = None):
+        '''Check someone's current amount of gold, exp and level.'''
 
         if user is None:
             user = ctx.author
@@ -71,7 +80,7 @@ class Leveling(Cog):
         gold = stats['gold']
         level = stats['level']
 
-        await ctx.send(f'{user.name} is level **{level}** and has **{exp}** experience points. They also have **{gold}**s gold.')
+        await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
     
     @level.command(name='amount')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -112,7 +121,7 @@ class Leveling(Cog):
 
         for user in await users.to_list(length=11):
             try:
-                embed.add_field(name=user['name'], value='**' + str(user['exp']) + '** exp')
+                embed.add_field(name=user['name'], value=str(user['exp']) + ' exp')
             except KeyError:
                 continue
         
@@ -121,7 +130,7 @@ class Leveling(Cog):
     @level.command(name='give')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def give(self, ctx, user: discord.User = None, amount: str = None):
-        '''Give an amount of gold/exp to a user.'''
+        '''Give a specific amount of gold to a user.'''
 
         if user is None or amount is None:
             return

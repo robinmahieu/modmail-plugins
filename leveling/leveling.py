@@ -102,7 +102,7 @@ class Leveling(Cog):
         await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
     
     @level.command(name='amount')
-    @checks.has_permissions(PermissionLevel.MODERATOR)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def amount(self, ctx, amount: str = None):
         '''Change the amount of gold given to a user per message.'''
 
@@ -127,7 +127,7 @@ class Leveling(Cog):
             await ctx.send(f'I successfully updated the amount of gold given to {amount}.')
     
     @level.command(name='give')
-    @checks.has_permissions(PermissionLevel.MODERATOR)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def give(self, ctx, user: discord.User = None, amount: str = None):
         '''Give an amount of gold/exp to a user.'''
 

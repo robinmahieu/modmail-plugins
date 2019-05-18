@@ -34,7 +34,7 @@ async def handle_message(self, message):
         level = int(new_exp ** (1/4))
 
         if person['level'] < level:
-            await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level {str(level)}!')
+            await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level **{str(level)}**!')
             await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level, 'name': message.author.name}})
         else:
             await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'name': message.author.name}})
@@ -71,7 +71,7 @@ class Leveling(Cog):
         gold = stats['gold']
         level = stats['level']
 
-        await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
+        await ctx.send(f'{user.name} is level **{level}** and has **{exp}** experience points. They also have **{gold}**s gold.')
     
     @level.command(name='amount')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -112,7 +112,7 @@ class Leveling(Cog):
 
         for user in await users.to_list(length=11):
             try:
-                embed.add_field(name=user['name'], value=str(user['exp']) + ' exp')
+                embed.add_field(name=user['name'], value='**' + str(user['exp']) + '** exp')
             except KeyError:
                 continue
         

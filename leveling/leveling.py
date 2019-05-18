@@ -126,6 +126,26 @@ class Leveling(Cog):
             await self.db.update_one({'id': 'leveling-config'}, {'$set': {'amount': amount}})
             await ctx.send(f'I successfully updated the amount of gold given to {amount}.')
     
+    @level.command(name='leaderboard', aliases=['lb'])
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def leaderboard(self, ctx):
+        '''Check who has the most exp points.'''
+
+        users = self.db.find({}).sort('gold', -1)
+        
+        embed = discord.Embed(
+            title='Leaderboard for ' + ctx.guild.name,
+            colour=discord.Colour.blurple()
+        )
+
+        for user in await users.to_list(length=11):
+            try:
+                embed.add_field(name=user['name'], value=str(user['exp']) + ' exp')
+            except KeyError:
+                continue
+        
+        await ctx.send(embed=embed)
+    
     @level.command(name='give')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def give(self, ctx, user: discord.User = None, amount: str = None):

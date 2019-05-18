@@ -45,9 +45,9 @@ class Leveling(Cog):
 
                 if person['level'] < level:
                     await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level {str(level)}!')
-                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level}})
+                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level, 'name': message.author.name}})
                 else:
-                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp}})
+                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'name': message.author.name}})
     else:
         @Cog.listener()
         async def on_message(self, message):
@@ -79,9 +79,9 @@ class Leveling(Cog):
 
                 if person['level'] < level:
                     await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level {str(level)}!')
-                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level}})
+                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level, 'name': message.author.name}})
                 else:
-                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp}})
+                    await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'name': message.author.name}})
 
     @commands.group(name='level', invoke_without_command=True)
     async def level(self, ctx, user: discord.User = None):

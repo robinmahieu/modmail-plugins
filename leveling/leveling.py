@@ -150,7 +150,7 @@ class Leveling(Cog):
             gold = int(stats['gold'])
             exp = int(stats['exp'])
 
-            await self.db.update_one({'id': user.id}, {'$set': {'gold': gold + amount, 'exp': exp + amount}})
+            await self.db.update_one({'id': user.id}, {'$set': {'gold': gold + amount}})
             await ctx.send(f'I gave {amount} gold to {user.name}.')
 
 

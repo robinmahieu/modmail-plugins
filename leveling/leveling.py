@@ -131,7 +131,7 @@ class Leveling(Cog):
     async def leaderboard(self, ctx):
         '''Check who has the most exp points.'''
 
-        users = self.db.find({}).sort('gold', -1)
+        users = self.db.find({}).sort('exp', -1)
         
         embed = discord.Embed(
             title='Leaderboard for ' + ctx.guild.name,

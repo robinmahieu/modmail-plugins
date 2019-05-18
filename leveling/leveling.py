@@ -83,12 +83,23 @@ class Leveling(Cog):
                 else:
                     await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp}})
 
-    @commands.group()
-    async def level(self, ctx):
+    @commands.group(name='level', invoke_without_command=True)
+    async def level(self, ctx, user: discord.User = None):
         '''Leveling makes it easy for you to keep track of active members.'''
 
-        if ctx.invoked_subcommand is None:
-            return
+        if user is None:
+            user = ctx.author
+    
+        stats = await self.db.find_one({'id': user.id})
+
+        if stats is None:
+            return await ctx.send(f'User {user.name} hasn\'t sent a message.')
+
+        exp = stats['exp']
+        gold = stats['gold']
+        level = stats['level']
+
+        await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
     
     @level.command(name='amount')
     @checks.has_permissions(PermissionLevel.MODERATOR)
@@ -114,25 +125,6 @@ class Leveling(Cog):
         else:
             await self.db.update_one({'id': 'leveling-config'}, {'$set': {'amount': amount}})
             await ctx.send(f'I successfully updated the amount of gold given to {amount}.')
-    
-    @level.command(name='get')
-    @checks.has_permissions(PermissionLevel.REGULAR)
-    async def get(self, ctx, user: discord.User = None):
-        '''Check the stats of a user.'''
-
-        if user is None:
-            user = ctx.author
-        
-        stats = await self.db.find_one({'id': user.id})
-
-        if stats is None:
-            return await ctx.send(f'User {user.name} hasn\'t sent a message.')
-
-        exp = stats['exp']
-        gold = stats['gold']
-        level = stats['level']
-
-        await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
     
     @level.command(name='give')
     @checks.has_permissions(PermissionLevel.MODERATOR)

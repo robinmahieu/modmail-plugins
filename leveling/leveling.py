@@ -60,8 +60,7 @@ class Leveling(Cog):
     async def level(self, ctx):
         '''Leveling makes it easy for you to keep track of active members.'''
 
-        cmd = self.bot.get_command('help')
-        await ctx.invoke(cmd, command='level')
+        await ctx.send_help(ctx.command)
 
     @level.command(name='info')
     @checks.has_permissions(PermissionLevel.REGULAR)

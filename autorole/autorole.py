@@ -7,30 +7,22 @@ from core.models import PermissionLevel
 Cog = getattr(commands, 'Cog', object)
 
 
-async def handle_message(self, member):
-    rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
-
-    if rolename is None:
-        return
-    else:
-        role = discord.utils.get(member.guild.roles, name=rolename)
-        await member.add_roles(role)
-
-
 class Autorole(Cog):
     """The autorole plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/autorole"""
 
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)    
-    
-    if discord.__version__ == '1.0.0a':
-        async def on_member_join(self, member):
-            await handle_message(self, member)
-    else:
-        @Cog.listener()
-        async def on_member_join(self, member):
-            await handle_message(self, member)
+
+    @Cog.listener()
+    async def on_member_join(self, member):
+        rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
+
+        if rolename is None:
+            return
+        else:
+            role = discord.utils.get(member.guild.roles, name=rolename)
+            await member.add_roles(role)
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)

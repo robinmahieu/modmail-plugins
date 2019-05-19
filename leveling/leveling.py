@@ -61,14 +61,14 @@ class Leveling(Cog):
     @commands.group(name='level', invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def level(self, ctx):
-        '''Leveling makes it easy for you to keep track of active members.'''
+        """Leveling makes it easy for you to keep track of active members."""
 
         await ctx.send_help(ctx.command)
 
     @level.command(name='info')
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def info(self, ctx, user: discord.User = None):
-        '''Check someone's current amount of gold, exp and level.'''
+        """Check someone's current amount of gold, exp and level."""
 
         if user is None:
             user = ctx.author
@@ -87,7 +87,7 @@ class Leveling(Cog):
     @level.command(name='amount')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def amount(self, ctx, amount: str = None):
-        '''Change the amount of gold given to a user per message.'''
+        """Change the amount of gold given to a user per message."""
 
         try:
             amount = int(amount)
@@ -112,7 +112,7 @@ class Leveling(Cog):
     @level.command(name='leaderboard', aliases=['lb'])
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def leaderboard(self, ctx):
-        '''Check who has the most exp points.'''
+        """Check who has the most exp points."""
 
         users = self.db.find({}).sort('exp', -1)
 
@@ -132,7 +132,7 @@ class Leveling(Cog):
     @level.command(name='give')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def give(self, ctx, user: discord.User = None, amount: str = None):
-        '''Give a specific amount of gold to a user.'''
+        """Give a specific amount of gold to a user."""
 
         if user is None or amount is None:
             return

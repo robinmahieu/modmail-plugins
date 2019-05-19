@@ -12,7 +12,7 @@ class Leveling(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)    
+        self.db = bot.plugin_db.get_partition(self)
 
     @Cog.listener()
     async def on_message(self, message):
@@ -42,10 +42,21 @@ class Leveling(Cog):
             level = int(new_exp ** (1/4))
 
             if person['level'] < level:
-                await message.channel.send(f'Congratulations, {message.author.mention}, you advanced to level {str(level)}!')
-                await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'level': level, 'name': message.author.name}})
+                await message.channel.send(f'Congratulations, {message.author.mention}, '
+                                           'you advanced to level {str(level)}!')
+
+                await self.db.update_one({'id': message.author.id},
+                                         {'$set': {'gold': new_gold,
+                                                   'exp': new_exp,
+                                                   'level': level,
+                                                   'name': message.author.name
+                                                   }})
             else:
-                await self.db.update_one({'id': message.author.id}, {'$set': {'gold': new_gold, 'exp': new_exp, 'name': message.author.name}})
+                await self.db.update_one({'id': message.author.id},
+                                         {'$set': {'gold': new_gold,
+                                                   'exp': new_exp,
+                                                   'name': message.author.name
+                                                   }})
 
     @commands.group(name='level', invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.REGULAR)
@@ -61,7 +72,7 @@ class Leveling(Cog):
 
         if user is None:
             user = ctx.author
-    
+
         stats = await self.db.find_one({'id': user.id})
 
         if stats is None:
@@ -72,7 +83,7 @@ class Leveling(Cog):
         level = stats['level']
 
         await ctx.send(f'{user.name} is level {level} and has {exp} experience points. They also have {gold} gold.')
-    
+
     @level.command(name='amount')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def amount(self, ctx, amount: str = None):
@@ -85,7 +96,7 @@ class Leveling(Cog):
 
         if amount < 1:
             return await ctx.send('I can\'t give negative gold.')
-        
+
         config = await self.db.find_one({'_id': 'leveling-config'})
 
         if config is None:
@@ -104,7 +115,7 @@ class Leveling(Cog):
         '''Check who has the most exp points.'''
 
         users = self.db.find({}).sort('exp', -1)
-        
+
         embed = discord.Embed(
             title='Leaderboard for ' + ctx.guild.name,
             colour=discord.Colour.blurple()
@@ -115,9 +126,9 @@ class Leveling(Cog):
                 embed.add_field(name=user['name'], value=str(user['exp']) + ' exp')
             except KeyError:
                 continue
-        
+
         await ctx.send(embed=embed)
-    
+
     @level.command(name='give')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def give(self, ctx, user: discord.User = None, amount: str = None):
@@ -133,14 +144,13 @@ class Leveling(Cog):
 
         if amount < 1:
             return await ctx.send('I can\'t give negative gold.')
-        
+
         stats = await self.db.find_one({'id': user.id})
 
         if stats is None:
             return await ctx.send('That user hasn\'t sent a message here.')
         else:
             gold = int(stats['gold'])
-            exp = int(stats['exp'])
 
             await self.db.update_one({'id': user.id}, {'$set': {'gold': gold + amount}})
             await ctx.send(f'I gave {amount} gold to {user.name}.')

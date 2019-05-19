@@ -27,7 +27,7 @@ class Purger(Cog):
                     amount = int(amount)
                 except Exception:
                     return await ctx.send('That\'s not a valid amount of messages to delete.')
-                
+
                 if amount > 1 and amount < 100:
                     await ctx.channel.purge(limit=amount + 1)
                     delete_message = await ctx.send(f'I successfully deleted {amount} messages!')

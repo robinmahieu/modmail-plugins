@@ -12,7 +12,7 @@ class Autorole(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)    
+        self.db = bot.plugin_db.get_partition(self)
 
     @Cog.listener()
     async def on_member_join(self, member):

@@ -1,3 +1,4 @@
-# Modmail Plugins
-
-This repository holds plugins that can be used for the [Modmail](https://github.com/kyb3r/modmail) Discord bot.
+<div align="center">
+  <img src="https://i.imgur.com/XyGXFPk.png">
+  <p><strong><i>Plugins that extend the functionality of discord Modmail</i></strong></p>
+</div>

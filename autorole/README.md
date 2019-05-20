@@ -1,19 +1,18 @@
-# Autorole
-
-This plugin makes it possible to auto-assign roles when a user joins your server.
+<div align="center">
+    <img  src="https://i.imgur.com/7DNRLHT.png" align="center">
+    <p><strong><i>Auto-assign a role to a user when they join your server.</i></strong></p>
+</div>
 
 ## Installation
 
-To use this plugin, use this command in your Modmail server: `plugin add papiersnipper/modmail-plugins/autorole`
+To install this plugin, use this command in your Modmail server: `plugin add autorole`
 
 ## Commands
 
-| name      | usage              | example          | permission         |description                             |
-|-----------|--------------------|------------------|--------------------|----------------------------------------|
-| setrole   | setrole rolename   | setrole Member   | Administrator [4]  | Gives this role to all new members     |
-| giveroles | giveroles rolename | giveroles Member | Administrator [4]  | Gives this role to all existing members |
-
-> The bot will only accept role names, so pinging the role **will not** work!
+| name          | usage              | example               | permission         | description                                       |
+|---------------|--------------------|-----------------------|--------------------|---------------------------------------------------|
+| autorole set  | autorole set role  | autorole set @Member  | Administrator [4]  | Sets the default role a member gets when joining. |
+| autorole give | autorole give role | autorole give @Member | Administrator [4]  | Gives this role to all members of your server.    |
 
 ## Permissions
 

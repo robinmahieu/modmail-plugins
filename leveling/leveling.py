@@ -8,7 +8,9 @@ Cog = getattr(commands, 'Cog', object)
 
 
 class Leveling(Cog):
-    """The leveling plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/leveling"""
+    """A leveling system for your server: see who's active and who's not.
+    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/leveling)
+    """
 
     def __init__(self, bot):
         self.bot = bot
@@ -61,7 +63,7 @@ class Leveling(Cog):
     @commands.group(name='level', invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def level(self, ctx):
-        """Leveling makes it easy for you to keep track of active members."""
+        """A leveling system for your server: see who's active and who's not."""
 
         await ctx.send_help(ctx.command)
 

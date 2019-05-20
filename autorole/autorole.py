@@ -8,7 +8,9 @@ Cog = getattr(commands, 'Cog', object)
 
 
 class Autorole(Cog):
-    """The autorole plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/autorole"""
+    """Auto-assign a role to a user when they join your server.
+    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/autorole)
+    """
 
     def __init__(self, bot):
         self.bot = bot
@@ -24,46 +26,33 @@ class Autorole(Cog):
             role = discord.utils.get(member.guild.roles, name=rolename)
             await member.add_roles(role)
 
-    @commands.command()
+    @commands.group(name='autorole', invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def setrole(self, ctx, rolename: str = None):
+    async def autorole(self, ctx):
+        """Auto-assign a role to a user when they join your server."""
+
+        await ctx.send_help(ctx.command)
+
+    @autorole.command(name='set')
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def set_(self, ctx, role: discord.Role):
         """Sets the default role a member gets when joining."""
 
-        role = discord.utils.get(ctx.author.guild.roles, name=rolename)
+        await self.db.find_one_and_update({'_id': 'autorole-config'}, {'$set': {'rolename': role.name}})
 
-        if role is None:
-            return await ctx.send('I couldn\'t find that role. Make sure to check the capitalisation.')
+        em = discord.Embed(
+            title='Autorole',
+            url='https://github.com/papiersnipper/modmail-plugins/blob/master/autorole',
+            description=f'I will now give {role.mention} to all new members.',
+            colour=self.bot.main_color
+        )
 
-        try:
-            self.db.delete_one({'_id': 'autorole-config'})
+        await ctx.send(embed=em)
 
-            self.db.insert_one({
-                '_id': 'autorole-config',
-                'rolename': role.name
-            })
-        except Exception:
-            self.db.insert_one({
-                '_id': 'autorole-config',
-                'rolename': role.name
-            })
-
-        await ctx.send('I will now give that role to all new members!')
-
-    @commands.command()
+    @autorole.command(name='give')
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def giveroles(self, ctx, rolename: str = None):
-        """Gives all members of the server this role"""
-
-        if rolename is None:
-            rolename = (await self.db.find_one({'_id': 'autorole-config'}))['rolename']
-
-            if rolename is None:
-                return await ctx.send('Please supply a role, or set one with the `setrole` command.')
-
-        role = discord.utils.get(ctx.author.guild.roles, name=rolename)
-
-        if role is None:
-            return await ctx.send('I couldn\'t find that role. Make sure to check the capitalisation.')
+    async def give(self, ctx, role: discord.Role):
+        """Gives this role to all members of your server."""
 
         users = 0
         for member in ctx.guild.members:
@@ -73,7 +62,14 @@ class Autorole(Cog):
                 await member.add_roles(role)
                 users = users + 1
 
-        await ctx.send(f'Added {role.name} for {users} members.')
+        em = discord.Embed(
+            title='Autorole',
+            url='https://github.com/papiersnipper/modmail-plugins/blob/master/autorole',
+            description=f'Added {role.mention} for {users} members.',
+            colour=self.bot.main_color
+        )
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):

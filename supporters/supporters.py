@@ -8,7 +8,9 @@ Cog = getattr(commands, 'Cog', object)
 
 
 class Supporters(Cog):
-    """The supporters plugin for Modmail: https://github.com/papiersnipper/modmail-plugins/blob/master/supporters"""
+    """Let your users know who is part of the support team.
+    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/supporters)
+    """
 
     def __init__(self, bot):
         self.bot = bot
@@ -16,7 +18,7 @@ class Supporters(Cog):
     @commands.command(aliases=['helpers', 'supporters', 'supportmembers'])
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def support(self, ctx):
-        """Sends an embed with all the support members."""
+        """Send an embed with all the support members."""
 
         category_id = self.bot.config.get('main_category_id')
 

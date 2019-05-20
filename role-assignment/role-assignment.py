@@ -9,7 +9,9 @@ Cog = getattr(commands, 'Cog', object)
 
 
 class RoleAssignment(Cog):
-    """Assign roles using reactions."""
+    """Assign roles using reactions.
+    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/role-assignment)
+    """
 
     def __init__(self, bot):
         self.bot = bot

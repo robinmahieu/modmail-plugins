@@ -45,7 +45,7 @@ class Leveling(Cog):
 
             if person['level'] < level:
                 await message.channel.send(f'Congratulations, {message.author.mention}, '
-                                           'you advanced to level {str(level)}!')
+                                           f'you advanced to level {level}!')
 
                 await self.db.update_one({'id': message.author.id},
                                          {'$set': {'gold': new_gold,

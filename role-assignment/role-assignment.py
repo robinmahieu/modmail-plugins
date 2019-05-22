@@ -106,6 +106,7 @@ class RoleAssignment(Cog):
         role = discord.utils.get(guild.roles, name=role)
 
         if role is None:
+            await guild.get_channel(payload.channel_id).send('Configured role not found.')
             return
 
         for m in guild.members:

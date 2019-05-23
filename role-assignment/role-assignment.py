@@ -1,5 +1,6 @@
 import asyncio
 import discord
+from datetime import datetime
 from discord.ext import commands
 
 from core import checks
@@ -94,6 +95,24 @@ class RoleAssignment(Cog):
 
         await ctx.send(f'I successfully deleted <:{emoji.name}:{emoji.id}>.')
 
+    @role.command(aliases=["setlogs","setlog"])
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def log(self,channel: discord.TextChannel):
+        """
+        ( Optional )
+        Set a channel to log who added role to the user.
+
+        **Usage:**
+        log #channel
+        """
+        await self.db.find_one_and_update(
+            {"_id": "config"},
+            {"$set": {"log": str(channel.id)}},
+            upsert=True
+        )
+
+        await ctx.send(f'Done! Logs would be sent in {channel.mention}!')
+
     @Cog.listener()
     async def on_thread_ready(self, thread):
         message = thread.genesis_message
@@ -105,13 +124,13 @@ class RoleAssignment(Cog):
         await self.update_db()
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, payload):
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
 
         if str(payload.message_id) not in self.ids:
             return
 
         guild_id = payload.guild_id
-        guild = discord.utils.find(lambda g : g.id == guild_id, self.bot.guilds)
+        guild: discord.Guild = discord.utils.find(lambda g : g.id == guild_id, self.bot.guilds)
 
         if payload.user_id == self.bot.user.id:
             return
@@ -134,6 +153,25 @@ class RoleAssignment(Cog):
 
         await member.add_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully added {role} to {member.name}')
+
+        config = (await self.db.find_one({'_id': 'config'}))['logs']
+        if config is None:
+            pass
+        try:
+            user = await self.bot.fetch_user(payload.user_id)
+            channel = guild.get_channel(int(config))
+            if channel is None:
+                return
+            embed = discord.Embed(
+                title=f"Role Added | {member.name}#{member.discriminator}",
+                color=discord.Colour.green(),
+                timestamp=datetime.utcnow()
+            )
+            embed.add_field(name="Added By", value=f'{user.name}#{user.discriminator}')
+            await ctx.send(embed=embed)
+        except:
+            pass
+
     
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -162,6 +200,24 @@ class RoleAssignment(Cog):
 
         await member.remove_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully removed {role} from {member.name}')
+
+        config = (await self.db.find_one({'_id': 'config'}))['logs']
+        if config is None:
+            pass
+        try:
+            user = await self.bot.fetch_user(payload.user_id)
+            channel = guild.get_channel(int(config))
+            if channel is None:
+                return
+            embed = discord.Embed(
+                title=f"Role Removed | {member.name}#{member.discriminator}",
+                color=discord.Colour.red(),
+                timestamp=datetime.utcnow()
+            )
+            embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
+            await ctx.send(embed=embed)
+        except:
+            pass
 
     @Cog.listener()
     async def on_guild_channel_delete(self,channel):

@@ -190,7 +190,7 @@ class RoleAssignment(Cog):
 
         for c in category.channels:
             if isinstance(c,discord.TextChannel):
-                if "User ID: " not in c.topic:
+                if c.topic and "User ID: " not in c.topic:
                     return
                 messages = await c.history(oldest_first=True).flatten()
                 if str(messages[0].id) not in self.ids:

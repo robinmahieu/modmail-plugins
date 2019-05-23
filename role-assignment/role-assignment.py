@@ -154,9 +154,9 @@ class RoleAssignment(Cog):
         await member.add_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully added {role} to {member.name}')
 
-        config = (await self.db.find_one({'_id': 'config'}))['logs']
-        if config is None:
-            pass
+        config = (await self.db.find_one({'_id': 'config'}))
+        if config is None or config['logs'] is None:
+            return
         try:
             user = await self.bot.fetch_user(payload.user_id)
             channel = guild.get_channel(int(config))
@@ -201,9 +201,9 @@ class RoleAssignment(Cog):
         await member.remove_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully removed {role} from {member.name}')
 
-        config = (await self.db.find_one({'_id': 'config'}))['logs']
-        if config is None:
-            pass
+        config = (await self.db.find_one({'_id': 'config'}))
+        if config is None or config['logs'] is None:
+            return
         try:
             user = await self.bot.fetch_user(payload.user_id)
             channel = guild.get_channel(int(config))
@@ -230,7 +230,7 @@ class RoleAssignment(Cog):
                 return
 
             # Further Code ..
-            for msg_id, channel_id in self.ids:
+            for msg_id, channel_id in self.ids.items():
                 if channel_id == str(channel.id):
                     self.ids.pop(msg_id)
                     await self.update_db()

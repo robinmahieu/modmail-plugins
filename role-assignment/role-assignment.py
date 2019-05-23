@@ -163,16 +163,17 @@ class RoleAssignment(Cog):
             if channel is None:
                 return
             embed = discord.Embed(
-                title=f"Role Added | {member.name}#{member.discriminator}",
                 color=discord.Colour.green(),
                 timestamp=datetime.utcnow()
             )
-            embed.add_field(name="Added By", value=f'{user.name}#{user.discriminator}')
-            await ctx.send(embed=embed)
-        except:
-            pass
 
-    
+            embed.set_author(name=f"Role Added | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
+            embed.add_field(name="Added By", value=f'{user.name}#{user.discriminator}')
+
+            await channel.send(embed=embed)
+        except Exception as e:
+            raise e
+
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
 
@@ -210,14 +211,16 @@ class RoleAssignment(Cog):
             if channel is None:
                 return
             embed = discord.Embed(
-                title=f"Role Removed | {member.name}#{member.discriminator}",
                 color=discord.Colour.red(),
                 timestamp=datetime.utcnow()
             )
+
+            embed.set_author(name=f"Role Removed | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
             embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
-            await ctx.send(embed=embed)
-        except:
-            pass
+
+            await channel.send(embed=embed)
+        except Exception as e:
+            raise e
 
     @Cog.listener()
     async def on_guild_channel_delete(self,channel):

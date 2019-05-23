@@ -192,8 +192,7 @@ class RoleAssignment(Cog):
                 messages = await c.history(oldest_first=True).flatten()
                 if str(messages[0].id) not in self.ids:
                     self.ids[str(messages[0].id)] = str(c.id)
-
-        await self.update_db()
+                    await self.update_db()
 
 def setup(bot):
     bot.add_cog(RoleAssignment(bot))

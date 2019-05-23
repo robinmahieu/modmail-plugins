@@ -168,7 +168,9 @@ class RoleAssignment(Cog):
             )
 
             embed.set_author(name=f"Role Added | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
+            embed.add_field(name="Role", value=role.name)
             embed.add_field(name="Added By", value=f'{user.name}#{user.discriminator}')
+            embed.set_footer(f"User ID: {member_id}")
 
             await channel.send(embed=embed)
         except Exception as e:
@@ -216,8 +218,10 @@ class RoleAssignment(Cog):
             )
 
             embed.set_author(name=f"Role Removed | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
-            embed.add_field(name="Role", value=role.name)
-            embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
+            embed.description = f"Role **{role.name}** was removed from **{member.name}#{member.discriminator}** by {user.name}#{user.discriminator}"
+            # embed.add_field(name="Role", value=role.name)
+            # embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
+            embed.set_footer(f"User ID: {member_id}")
 
             await channel.send(embed=embed)
         except Exception as e:

@@ -33,7 +33,7 @@ class RoleAssignment(Cog):
         if config is None:
             return
 
-        self.ids = dict(config.get("ids",{})
+        self.ids = dict(config.get("ids", {}))
     
     @commands.group(name='role', aliases=['roles'], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)

@@ -185,12 +185,12 @@ class RoleAssignment(Cog):
 
         categories: discord.CategoryChannel = await guild.get_channel(int(self.bot.config.get('main_category_id')))
 
-        if category is None:
-            return
+        # if category is None:
+        #     return
 
         for c in categories:
             if isinstance(c,discord.TextChannel):
-                messages = await c.history(oldest_first=True,limit=2,around=c.created_at).flatten()
+                messages = await c.history(oldest_first=True,limit=10,around=c.created_at).flatten()
                 msg = messages[0]
                 if msg.embeds[0].footer.text is None or "User ID" not in msg.embeds[0].footer.text:
                     msg = messages[1]

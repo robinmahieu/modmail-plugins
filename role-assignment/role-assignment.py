@@ -167,10 +167,9 @@ class RoleAssignment(Cog):
                 timestamp=datetime.utcnow()
             )
 
-            embed.set_author(name=f"Role Added | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
-            embed.add_field(name="Role", value=role.name)
-            embed.add_field(name="Added By", value=f'{user.name}#{user.discriminator}')
-            embed.set_footer(text=f"User ID: {member_id}")
+            embed.title = "Role Added"
+            embed.description = f"**{role.name}** was added to **{member.name}#{member.discriminator}** by **{user.name}#{user.discriminator}**"
+            embed.set_footer(text=f'User ID: {member_id}')
 
             await channel.send(embed=embed)
         except Exception as e:
@@ -217,11 +216,9 @@ class RoleAssignment(Cog):
                 timestamp=datetime.utcnow()
             )
 
-            embed.set_author(name=f"Role Removed | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
-            embed.description = f"Role **{role.name}** was removed from **{member.name}#{member.discriminator}** by {user.name}#{user.discriminator}"
-            # embed.add_field(name="Role", value=role.name)
-            # embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
-            embed.set_footer(text=f"User ID: {member_id}")
+            embed.title = "Role Removed"
+            embed.description = f"**{role.name}** was removed from **{member.name}#{member.discriminator}** by **{user.name}#{user.discriminator}**"
+            embed.set_footer(text=f'User ID: {member_id}')
 
             await channel.send(embed=embed)
         except Exception as e:

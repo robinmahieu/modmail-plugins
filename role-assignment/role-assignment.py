@@ -27,7 +27,7 @@ class RoleAssignment(Cog):
             upsert=True
         )
 
-    async def set_db(self):
+    async def _set_db(self):
         config = await self.db.find_one({'_id': 'role-config'})
 
         if config is None:
@@ -179,14 +179,11 @@ class RoleAssignment(Cog):
 
     @Cog.listener()
     async def on_plugin_ready(self):
-        asyncio.create_task(self.set_db())
+        asyncio.create_task(self._set_db())
         await asyncio.sleep(30)
         guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
 
         category: discord.CategoryChannel = guild.get_channel(int(self.bot.config.get('main_category_id')))
-
-        # if category is None:
-        #     return
 
         for c in category.channels:
             if isinstance(c,discord.TextChannel):
@@ -196,7 +193,7 @@ class RoleAssignment(Cog):
                 if str(messages[0].id) not in self.ids:
                     self.ids[str(messages[0].id)] = str(c.id)
 
-        await self._update_db()
+        await self.update_db()
 
 def setup(bot):
     bot.add_cog(RoleAssignment(bot))

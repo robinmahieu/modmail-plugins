@@ -95,24 +95,6 @@ class RoleAssignment(Cog):
 
         await ctx.send(f'I successfully deleted <:{emoji.name}:{emoji.id}>.')
 
-    @role.command(aliases=["setlogs","setlog"])
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def log(self, ctx, channel: discord.TextChannel):
-        """
-        ( Optional )
-        Set a channel to log who added role to the user.
-
-        **Usage:**
-        log #channel
-        """
-        await self.db.find_one_and_update(
-            {"_id": "config"},
-            {"$set": {"log": str(channel.id)}},
-            upsert=True
-        )
-
-        await ctx.send(f'Done! Logs would be sent in {channel.mention}!')
-
     @Cog.listener()
     async def on_thread_ready(self, thread):
         message = thread.genesis_message
@@ -154,27 +136,6 @@ class RoleAssignment(Cog):
         await member.add_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully added {role} to {member.name}')
 
-        config = (await self.db.find_one({'_id': 'config'}))
-        if config is None or config['log'] is None:
-            return
-        try:
-            user = await self.bot.fetch_user(payload.user_id)
-            channel = guild.get_channel(int(config['log']))
-            if channel is None:
-                return
-            embed = discord.Embed(
-                color=discord.Colour.green(),
-                timestamp=datetime.utcnow()
-            )
-
-            embed.title = "Role Added"
-            embed.description = f"**{role.name}** was added to **{member.name}#{member.discriminator}** by **{user.name}#{user.discriminator}**"
-            embed.set_footer(text=f'User ID: {member_id}')
-
-            await channel.send(embed=embed)
-        except Exception as e:
-            raise e
-
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
 
@@ -203,42 +164,17 @@ class RoleAssignment(Cog):
         await member.remove_roles(role)
         await guild.get_channel(payload.channel_id).send(f'Successfully removed {role} from {member.name}')
 
-        config = (await self.db.find_one({'_id': 'config'}))
-        if config is None or config['log'] is None:
-            return
-        try:
-            user = await self.bot.fetch_user(payload.user_id)
-            channel = guild.get_channel(int(config['log']))
-            if channel is None:
-                return
-            embed = discord.Embed(
-                color=discord.Colour.red(),
-                timestamp=datetime.utcnow()
-            )
-
-            embed.title = "Role Removed"
-            embed.description = f"**{role.name}** was removed from **{member.name}#{member.discriminator}** by **{user.name}#{user.discriminator}**"
-            embed.set_footer(text=f'User ID: {member_id}')
-
-            await channel.send(embed=embed)
-        except Exception as e:
-            raise e
-
     @Cog.listener()
     async def on_guild_channel_delete(self,channel):
-
-        # Here, we check if the channel is a text channel
         if isinstance(channel, discord.TextChannel):
-
-            # We check if the deleted channel is a thread channel or not, if it isn't in the main category, we return
             if channel.category_id != self.bot.config.get('main_category_id'):
                 return
 
-            # Further Code ..
             for msg_id, channel_id in self.ids.items():
                 if channel_id == str(channel.id):
                     self.ids.pop(msg_id)
                     await self.update_db()
+
 
 def setup(bot):
     bot.add_cog(RoleAssignment(bot))

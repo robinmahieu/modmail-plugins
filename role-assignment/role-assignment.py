@@ -97,7 +97,7 @@ class RoleAssignment(Cog):
 
     @role.command(aliases=["setlogs","setlog"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def log(self,channel: discord.TextChannel):
+    async def log(self, ctx, channel: discord.TextChannel):
         """
         ( Optional )
         Set a channel to log who added role to the user.

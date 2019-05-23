@@ -159,7 +159,7 @@ class RoleAssignment(Cog):
             return
         try:
             user = await self.bot.fetch_user(payload.user_id)
-            channel = guild.get_channel(int(config))
+            channel = guild.get_channel(int(config['log']))
             if channel is None:
                 return
             embed = discord.Embed(
@@ -207,7 +207,7 @@ class RoleAssignment(Cog):
             return
         try:
             user = await self.bot.fetch_user(payload.user_id)
-            channel = guild.get_channel(int(config))
+            channel = guild.get_channel(int(config['log']))
             if channel is None:
                 return
             embed = discord.Embed(

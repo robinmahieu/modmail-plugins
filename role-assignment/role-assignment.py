@@ -183,7 +183,7 @@ class RoleAssignment(Cog):
         await asyncio.sleep(30)
         guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
 
-        categories: discord.CategoryChannel = await guild.get_channel(int(self.bot.config.get('main_category_id')))
+        categories: discord.CategoryChannel = guild.get_channel(int(self.bot.config.get('main_category_id')))
 
         # if category is None:
         #     return

@@ -183,12 +183,12 @@ class RoleAssignment(Cog):
         await asyncio.sleep(30)
         guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
 
-        categories: discord.CategoryChannel = guild.get_channel(int(self.bot.config.get('main_category_id')))
+        category: discord.CategoryChannel = guild.get_channel(int(self.bot.config.get('main_category_id')))
 
         # if category is None:
         #     return
 
-        for c in categories:
+        for c in category.channels:
             if isinstance(c,discord.TextChannel):
                 messages = await c.history(oldest_first=True).flatten()
                 await c.send(messages[0].id)

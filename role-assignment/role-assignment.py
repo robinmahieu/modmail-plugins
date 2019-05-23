@@ -190,11 +190,8 @@ class RoleAssignment(Cog):
 
         for c in categories:
             if isinstance(c,discord.TextChannel):
-                messages = await c.history(oldest_first=True,limit=10,around=c.created_at).flatten()
-                msg = messages[0]
-                if msg.embeds[0].footer.text is None or "User ID" not in msg.embeds[0].footer.text:
-                    msg = messages[1]
-                await c.send(msg.id)
+                messages = await c.history(oldest_first=True).flatten()
+                await c.send(messages[0].id)
 
 
 

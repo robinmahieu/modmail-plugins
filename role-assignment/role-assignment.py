@@ -190,8 +190,11 @@ class RoleAssignment(Cog):
 
         for c in category.channels:
             if isinstance(c,discord.TextChannel):
+                if "User ID: " not in c.topic:
+                    return
                 messages = await c.history(oldest_first=True).flatten()
-                await c.send(messages[0].id)
+                if str(messages[0].id) not in self.ids:
+                    self.ids[str(messages[0].id)] = str(c.id)
 
 
 

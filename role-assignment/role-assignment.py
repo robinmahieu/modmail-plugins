@@ -27,7 +27,7 @@ class RoleAssignment(Cog):
             upsert=True
         )
 
-    async def _set_db(self):
+    async def set_db(self):
         config = await self.db.find_one({'_id': 'role-config'})
 
         if config is None:
@@ -179,7 +179,7 @@ class RoleAssignment(Cog):
 
     @Cog.listener()
     async def on_plugin_ready(self):
-        asyncio.create_task(self._set_db())
+        asyncio.create_task(self.set_db())
         await asyncio.sleep(30)
         guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
 

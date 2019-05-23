@@ -196,7 +196,7 @@ class RoleAssignment(Cog):
                 if str(messages[0].id) not in self.ids:
                     self.ids[str(messages[0].id)] = str(c.id)
 
-
+        await self._update_db()
 
 def setup(bot):
     bot.add_cog(RoleAssignment(bot))

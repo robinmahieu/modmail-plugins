@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import os
 from datetime import datetime
 from discord.ext import commands
 
@@ -15,10 +16,9 @@ class RoleAssignment(Cog):
     """
 
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: discord.Client = bot
         self.db = bot.plugin_db.get_partition(self)
         self.ids = dict()
-        asyncio.create_task(self._set_db())
 
     async def update_db(self):
         await self.db.find_one_and_update(
@@ -174,6 +174,28 @@ class RoleAssignment(Cog):
                 if channel_id == str(channel.id):
                     self.ids.pop(msg_id)
                     await self.update_db()
+
+
+
+    @Cog.listener()
+    async def on_plugin_ready(self):
+        asyncio.create_task(self._set_db())
+        await asyncio.sleep(30)
+        guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
+
+        categories: discord.CategoryChannel = await guild.get_channel(int(self.bot.config.get('main_category_id')))
+
+        if category is None:
+            return
+
+        for c in categories:
+            if isinstance(c,discord.TextChannel):
+                messages = await c.history(oldest_first=True,limit=2,around=c.created_at).flatten()
+                msg = messages[0]
+                if msg.embeds[0].footer.text is None or "User ID" not in msg.embeds[0].footer.text:
+                    msg = messages[1]
+                await c.send(msg.id)
+
 
 
 def setup(bot):

@@ -216,6 +216,7 @@ class RoleAssignment(Cog):
             )
 
             embed.set_author(name=f"Role Removed | {member.name}#{member.discriminator}", icon_url=member.avatar_url)
+            embed.add_field(name="Role", value=role.name)
             embed.add_field(name="Removed By", value=f'{user.name}#{user.discriminator}')
 
             await channel.send(embed=embed)

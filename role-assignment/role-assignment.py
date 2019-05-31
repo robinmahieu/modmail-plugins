@@ -173,7 +173,10 @@ class RoleAssignment(Cog):
             for msg_id, channel_id in self.ids.items():
                 if channel_id == str(channel.id):
                     self.ids.pop(msg_id)
-                    await self.update_db()
+                else:
+                    continue
+            
+            await self.update_db()
 
 
 
@@ -181,17 +184,31 @@ class RoleAssignment(Cog):
     async def on_plugin_ready(self):
         asyncio.create_task(self._set_db())
         await asyncio.sleep(30)
-        guild: discord.Guild = self.bot.get_guild(int(os.getenv("GUILD_ID")))
+        guild: discord.Guild = self.bot.get_guild(int(self.bot.config["GUILD_ID"]))
 
-        category: discord.CategoryChannel = guild.get_channel(int(self.bot.config.get('main_category_id')))
+        category: discord.CategoryChannel = guild.get_channel(int(self.bot.config['main_category_id']))
 
         for c in category.channels:
             if isinstance(c,discord.TextChannel):
                 if c.topic and "User ID: " not in c.topic:
-                    return
-                messages = await c.history(oldest_first=True).flatten()
-                if str(messages[0].id) not in self.ids:
-                    self.ids[str(messages[0].id)] = str(c.id)
+                    continue
+                else:
+                    messages = await c.history(oldest_first=True).flatten()
+                    if str(messages[0].id) not in self.ids:
+                        self.ids[str(messages[0].id)] = str(c.id)
+                    else:
+                        continue
+                    
+            else:
+                continue
+        
+        for k, v in self.ids:
+            channel = guild.get_channel(int(k))
+
+            if channel is None:
+                self.ids.pop(k)
+            else:
+                continue
 
         await self.update_db()
 

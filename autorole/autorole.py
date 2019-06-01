@@ -1,3 +1,5 @@
+import logging
+
 import asyncio
 import discord
 from discord.ext import commands
@@ -6,6 +8,8 @@ from core import checks
 from core.models import PermissionLevel
 
 Cog = getattr(commands, "Cog", object)
+
+logger = logging.getLogger("Modmail")
 
 
 class Autorole(Cog):
@@ -28,13 +32,22 @@ class Autorole(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member):
-        rolename = (await self.db.find_one({"_id": "autorole-config"}))["rolename"]
+        config = await self.db.find_one({"_id": "autorole-config"})
 
-        if rolename is None:
-            return
-        else:
-            role = discord.utils.get(member.guild.roles, name=rolename)
-            await member.add_roles(role)
+        if config is None:
+            return logger.warning("Member joined while no role was set!")
+
+        try:
+            rolename = config["rolename"]
+        except KeyError:
+            return logger.error("Something went wrong in your database!")
+
+        role = discord.utils.get(member.guild.roles, name=rolename)
+
+        if role is None:
+            return logger.error(f"Unknown role {rolename}!")
+
+        await member.add_roles(role)
 
     @commands.group(name="autorole", invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -52,6 +65,7 @@ class Autorole(Cog):
 
         if config is None:
             await self.db.insert_one({"_id": "autorole-config"})
+            logger.info("Created autorole config file.")
 
         await self.db.find_one_and_update(
             {"_id": "autorole-config"}, {"$set": {"rolename": role.name}}

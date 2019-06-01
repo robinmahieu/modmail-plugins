@@ -40,41 +40,45 @@ class RoleAssignment(Cog):
 
         category_id = int(self.bot.config["main_category_id"])
 
-        guild = self.bot.get_guild(int(self.bot.config["guild_id"]))
-
-        for c in guild.categories:
-            if c.id == category_id:
-                category = c
-            else:
-                continue
-
-        if category is None:
+        if category_id is None:
+            print("No main_category_id found!")
             return
 
-        channel_genesis_ids = []
-        for channel in c.channels:
-            if not isinstance(channel, discord.TextChannel):
+        guild = self.bot.get_guild(int(self.bot.config["guild_id"]))
+
+        if guild is None:
+            print("No guild_id found!")
+            return
+
+        for c in guild.categories:
+            if c.id != category_id:
                 continue
-
-            if channel.topic[:9] != "User ID: ":
-                continue
-
-            messages = await channel.history(oldest_first=True).flatten()
-            genesis_message = str(messages[0].id)
-            channel_genesis_ids.append(genesis_message)
-
-            if genesis_message not in self.ids:
-                self.ids.append(genesis_message)
             else:
-                continue
+                channel_genesis_ids = []
+                for channel in c.channels:
+                    if not isinstance(channel, discord.TextChannel):
+                        continue
 
-        for id in self.ids:
-            if id not in channel_genesis_ids:
-                self.ids.remove(id)
-            else:
-                continue
+                    if channel.topic[:9] != "User ID: ":
+                        continue
 
-        await self.update_db()
+                    messages = await channel.history(oldest_first=True).flatten()
+                    genesis_message = str(messages[0].id)
+                    channel_genesis_ids.append(genesis_message)
+
+                    if genesis_message not in self.ids:
+                        self.ids.append(genesis_message)
+                    else:
+                        continue
+
+                for id in self.ids:
+                    if id not in channel_genesis_ids:
+                        self.ids.remove(id)
+                    else:
+                        continue
+
+                await self.update_db()
+                print("Synced roles with database")
 
     @commands.group(name="role", aliases=["roles"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)

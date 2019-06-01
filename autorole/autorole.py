@@ -16,7 +16,7 @@ class Autorole(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
-         asyncio.create_task(self.api_post())
+        asyncio.create_task(self.api_post())
 
     async def api_post(self):
 
@@ -48,18 +48,23 @@ class Autorole(Cog):
     async def set_(self, ctx, role: discord.Role):
         """Sets the default role a member gets when joining."""
 
+        config = await self.db.find_one({"_id": "autorole-config"})
+
+        if config is None:
+            await self.db.insert_one({"_id": "autorole-config"})
+
         await self.db.find_one_and_update(
             {"_id": "autorole-config"}, {"$set": {"rolename": role.name}}
         )
 
-        em = discord.Embed(
+        embed = discord.Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
             description=f"I will now give {role.mention} to all new members.",
             colour=self.bot.main_color,
         )
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=embed)
 
     @autorole.command(name="give")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -74,14 +79,14 @@ class Autorole(Cog):
                 await member.add_roles(role)
                 users = users + 1
 
-        em = discord.Embed(
+        embed = discord.Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
             description=f"Added {role.mention} for {users} members.",
             colour=self.bot.main_color,
         )
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

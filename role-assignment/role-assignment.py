@@ -59,7 +59,7 @@ class RoleAssignment(Cog):
                     if not isinstance(channel, discord.TextChannel):
                         continue
 
-                    if channel.topic[:9] != "User ID: ":
+                    if channel.topic and channel.topic[:9] != "User ID: ":
                         continue
 
                     messages = await channel.history(oldest_first=True).flatten()

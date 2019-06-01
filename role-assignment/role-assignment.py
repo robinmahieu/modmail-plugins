@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import asyncio
 import discord
 from discord.ext import commands
@@ -19,19 +17,64 @@ class RoleAssignment(Cog):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
         self.ids = []
+        asyncio.create_task(self.sync())
 
     async def update_db(self):
+
         await self.db.find_one_and_update(
             {"_id": "role-config"}, {"$set": {"ids": self.ids}}
         )
 
     async def _set_db(self):
+
         config = await self.db.find_one({"_id": "role-config"})
 
         if config is None:
             return
 
         self.ids = config["ids"]
+
+    async def sync(self):
+
+        await self._set_db()
+
+        category_id = int(self.bot.config["main_category_id"])
+
+        guild = self.bot.get_guild(int(self.bot.config["guild_id"]))
+
+        for c in guild.categories:
+            if c.id == category_id:
+                category = c
+            else:
+                continue
+
+        if category is None:
+            return
+
+        channel_genesis_ids = []
+        for channel in c.channels:
+            if not isinstance(channel, discord.TextChannel):
+                continue
+
+            if channel.topic[:9] != "User ID: ":
+                continue
+
+            messages = await channel.history(oldest_first=True).flatten()
+            genesis_message = str(messages[0].id)
+            channel_genesis_ids.append(genesis_message)
+
+            if genesis_message not in self.ids:
+                self.ids.append(genesis_message)
+            else:
+                continue
+
+        for id in self.ids:
+            if id not in channel_genesis_ids:
+                self.ids.remove(id)
+            else:
+                continue
+
+        await self.update_db()
 
     @commands.group(name="role", aliases=["roles"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -95,50 +138,6 @@ class RoleAssignment(Cog):
         )
 
         await ctx.send(f"I successfully deleted <:{emoji.name}:{emoji.id}>.")
-    
-    @role.command(name="sync")
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def sync(self, ctx):
-        """Sync the channel ids in the database."""
-
-        await self._set_db()
-
-        category_id = int(self.bot.config["main_category_id"])
-
-        for c in ctx.guild.categories:
-            if c.id == category_id:
-                category = c
-            else:
-                continue
-        
-        if category is None:
-            return
-
-        channel_genesis_ids = []
-        for channel in c.channels:
-            if not isinstance(channel, discord.TextChannel):
-                continue
-
-            if channel.topic[:9] != "User ID: ":
-                continue
-
-            messages = await channel.history(oldest_first=True).flatten()
-            genesis_message = str(messages[0].id)
-            channel_genesis_ids.append(genesis_message)
-
-            if genesis_message not in self.ids:
-                self.ids.append(genesis_message)
-            else:
-                continue
-        
-        for id in self.ids:
-            if id not in channel_genesis_ids:
-                self.ids.remove(id)
-            else:
-                continue
-
-        await self.update_db()
-        await ctx.send("Successfully synced!")
 
     @Cog.listener()
     async def on_thread_ready(self, thread):
@@ -195,7 +194,7 @@ class RoleAssignment(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        
+
         await asyncio.sleep(1)
 
         if str(payload.message_id) not in self.ids:

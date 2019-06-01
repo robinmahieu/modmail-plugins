@@ -59,6 +59,9 @@ class RoleAssignment(Cog):
                     if not isinstance(channel, discord.TextChannel):
                         continue
 
+                    if channel.topic is None:
+                        continue
+
                     if channel.topic[:9] != "User ID: ":
                         continue
 

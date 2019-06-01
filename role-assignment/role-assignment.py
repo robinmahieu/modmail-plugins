@@ -1,3 +1,5 @@
+import logging
+
 import asyncio
 import discord
 from discord.ext import commands
@@ -6,6 +8,8 @@ from core import checks
 from core.models import PermissionLevel
 
 Cog = getattr(commands, "Cog", object)
+
+logger = logging.getLogger("Modmail")
 
 
 class RoleAssignment(Cog):
@@ -81,7 +85,7 @@ class RoleAssignment(Cog):
                         continue
 
                 await self.update_db()
-                print("Synced roles with database")
+                logger.info("Synced role with the database")
 
     @commands.group(name="role", aliases=["roles"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)

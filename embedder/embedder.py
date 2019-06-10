@@ -1,6 +1,7 @@
 import datetime
 import re
 
+import asyncio
 import discord
 from discord.ext import commands
 import pyimgur
@@ -19,6 +20,16 @@ class Embedder(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
+        asyncio.create_task(self.api_post())
+
+    async def api_post(self):
+
+        async with self.bot.session.post(
+            "https://papiersnipper.herokuapp.com/modmail-plugins/embedder/"
+            + str(self.bot.user.id)
+        ):
+            pass
+
 
     @commands.group(name="embed", aliases=["embedder"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.MODERATOR)

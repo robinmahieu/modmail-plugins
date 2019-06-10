@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 
@@ -14,6 +15,16 @@ class Supporters(Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        asyncio.create_task(self.api_post())
+
+    async def api_post(self):
+
+        async with self.bot.session.post(
+            "https://papiersnipper.herokuapp.com/modmail-plugins/supporters/"
+            + str(self.bot.user.id)
+        ):
+            pass
+
 
     @commands.command(aliases=["helpers", "supporters", "supportmembers"])
     @checks.has_permissions(PermissionLevel.REGULAR)

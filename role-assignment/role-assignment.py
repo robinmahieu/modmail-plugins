@@ -22,6 +22,16 @@ class RoleAssignment(Cog):
         self.db = bot.plugin_db.get_partition(self)
         self.ids = []
         asyncio.create_task(self.sync())
+        asyncio.create_task(self.api_post())
+
+    async def api_post(self):
+
+        async with self.bot.session.post(
+            "https://papiersnipper.herokuapp.com/modmail-plugins/role-assignment/"
+            + str(self.bot.user.id)
+        ):
+            pass
+
 
     async def update_db(self):
 

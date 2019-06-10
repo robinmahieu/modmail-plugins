@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 
@@ -15,6 +16,16 @@ class Leveling(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
+        asyncio.create_task(self.api_post())
+
+    async def api_post(self):
+
+        async with self.bot.session.post(
+            "https://papiersnipper.herokuapp.com/modmail-plugins/leveling/"
+            + str(self.bot.user.id)
+        ):
+            pass
+
 
     @Cog.listener()
     async def on_message(self, message):

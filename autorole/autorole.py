@@ -11,6 +11,7 @@ import logging
 from discord import Embed, Guild, Member, Role
 from discord.ext.commands import Bot, Cog, Context, Greedy, group
 from discord.utils import get
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from core.checks import has_permissions
 from core.models import PermissionLevel
@@ -27,7 +28,7 @@ class Autorole(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
+        self.db: AsyncIOMotorCollection = bot.plugin_db.get_partition(self)
         asyncio.create_task(self.migrate())
 
     async def migrate(self) -> None:
@@ -108,7 +109,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=f"{', '.join(role_mentions)} will now be given to all new members.",
+            description=f"I will now give {', '.join(role_mentions)} to all new members.",
             color=self.bot.main_color,
         )
 

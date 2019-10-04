@@ -109,7 +109,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=f"I will now give {', '.join(role_mentions)} to all new members.",
+            description=f"{', '.join(role_mentions)} will now be given to all new members.",
             color=self.bot.main_color,
         )
 

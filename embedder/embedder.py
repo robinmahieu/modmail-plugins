@@ -1,7 +1,7 @@
 """
 Embedder plugin for Modmail.
 
-Written by Papiernsipper.
+Written by Papiersnipper.
 All rights reserved.
 """
 

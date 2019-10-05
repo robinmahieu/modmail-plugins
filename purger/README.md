@@ -9,9 +9,9 @@ To use this plugin, use this command in your Modmail server: `plugin add purger`
 
 ## Commands
 
-| name    | usage          | example    | permission     | description                               |
-|---------|----------------|------------|----------------|-------------------------------------------|
-| purge   | purge amount   | purge 10   | Moderator [3]  | Delete the specified amount of messages.  |
+| name  | usage        | example  | permission    | description                              |
+| ----- | ------------ | -------- | ------------- | ---------------------------------------- |
+| purge | purge amount | purge 10 | Moderator [3] | Delete the specified amount of messages. |
 
 ## Permissions
 

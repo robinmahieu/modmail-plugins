@@ -73,7 +73,7 @@ class Embedder(Cog):
             colorcode = (await self.db.find_one({"_id": "embedcolor-config"}))[
                 "colorcode"
             ]
-        except KeyError:
+        except (KeyError, TypeError):
             colorcode = "0x3498DB"  # blue
 
         embed = Embed(

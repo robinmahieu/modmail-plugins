@@ -43,14 +43,14 @@ class Supporters(Cog):
 
             return await ctx.send(embed=embed)
 
-        categories = ctx.guild.categories
+        categories = self.bot.modmail_guild.categories
 
         for category in categories:
             if category.id != int(category_id):
                 continue
             else:
                 member_list = []
-                for member in ctx.guild.members:
+                for member in self.bot.modmail_guild.members:
                     if member.permissions_in(category).read_messages:
                         if not member.bot:
                             member_list.append(member.mention)

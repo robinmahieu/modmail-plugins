@@ -1,11 +1,16 @@
-import asyncio
-import discord
-from discord.ext import commands
+"""
+Leveling plugin for Modmail.
 
-from core import checks
+Written by Papiersnipper.
+All rights reserved.
+"""
+
+from discord import Embed, Message, User
+from discord.ext.commands import Bot, Cog, Context, group
+from motor.motor_asyncio import AsyncIOMotorCollection
+
+from core.checks import has_permissions
 from core.models import PermissionLevel
-
-Cog = getattr(commands, "Cog", object)
 
 
 class Leveling(Cog):
@@ -13,31 +18,21 @@ class Leveling(Cog):
     More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/leveling)
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
-        asyncio.create_task(self.api_post())
-
-    async def api_post(self):
-
-        async with self.bot.session.post(
-            "https://papiersnipper.herokuapp.com/modmail-plugins/leveling/"
-            + str(self.bot.user.id)
-        ):
-            pass
-
+        self.db: AsyncIOMotorCollection = bot.plugin_db.get_partition(self)
 
     @Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: Message) -> None:
         if message.author.bot:
             return
 
-        config = await self.db.find_one({"_id": "leveling-config"})
-
-        if config is None:
+        try:
+            amount = (await self.db.find_one({"_id": "leveling-config"}))[
+                "amount_per_message"
+            ]
+        except (KeyError, TypeError):
             return
-
-        amount = config["amount_per_message"]
 
         person = await self.db.find_one({"id": message.author.id})
 
@@ -85,25 +80,24 @@ class Leveling(Cog):
                     },
                 )
 
-    @commands.group(name="level", invoke_without_command=True)
-    @checks.has_permissions(PermissionLevel.REGULAR)
-    async def level(self, ctx):
+    @group(name="level", invoke_without_command=True)
+    @has_permissions(PermissionLevel.REGULAR)
+    async def level(self, ctx: Context) -> None:
         """A leveling system for your server: see who's active and who's not."""
 
         await ctx.send_help(ctx.command)
 
     @level.command(name="info")
-    @checks.has_permissions(PermissionLevel.REGULAR)
-    async def info(self, ctx, user: discord.User = None):
+    @has_permissions(PermissionLevel.REGULAR)
+    async def info(self, ctx: Context, user: User = None) -> None:
         """Check someone's current amount of gold, exp and level."""
 
-        if user is None:
-            user = ctx.author
+        user: User = user if user is not None else ctx.author
 
         stats = await self.db.find_one({"id": user.id})
 
         if stats is None:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description=f"User {user.name} hasn't sent a single message here.",
@@ -112,7 +106,7 @@ class Leveling(Cog):
 
             return await ctx.send(embed=embed)
 
-        embed = discord.Embed(
+        embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
             description=f"{user.name} is level "
@@ -128,14 +122,14 @@ class Leveling(Cog):
         await ctx.send(embed=embed)
 
     @level.command(name="amount")
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def amount(self, ctx, amount):
+    @has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def amount(self, ctx: Context, amount: str) -> None:
         """Change the amount of gold given to a user per message."""
 
         try:
             amount = int(amount)
         except ValueError:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description="That doesn't look like a valid number.",
@@ -145,7 +139,7 @@ class Leveling(Cog):
             return await ctx.send(embed=embed)
 
         if amount < 1:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description="I can't give negative gold.",
@@ -160,36 +154,35 @@ class Leveling(Cog):
             await self.db.insert_one(
                 {"_id": "leveling-config", "amount_per_message": amount}
             )
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description=f"I set the amount of gold given to {amount}.",
                 color=self.bot.main_color,
             )
-
-            await ctx.send(embed=embed)
         else:
             await self.db.update_one(
-                {"id": "leveling-config"}, {"$set": {"amount": amount}}
+                {"_id": "leveling-config"}, {"$set": {"amount_per_message": amount}}
             )
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description=f"I updated the amount of gold given to {amount}.",
                 color=self.bot.main_color,
             )
 
-            await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @level.command(name="leaderboard", aliases=["lb"])
-    @checks.has_permissions(PermissionLevel.REGULAR)
-    async def leaderboard(self, ctx):
+    @has_permissions(PermissionLevel.REGULAR)
+    async def leaderboard(self, ctx: Context) -> None:
         """Check who has the most experience points."""
 
         users = self.db.find({}).sort("exp", -1)
 
-        embed = discord.Embed(
-            title="Leaderboard for " + ctx.guild.name, colour=discord.Colour.blurple(),
+        embed = Embed(
+            title="Leaderboard for " + ctx.guild.name,
+            colour=self.bot.main_color,
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
         )
 
@@ -202,14 +195,14 @@ class Leveling(Cog):
         await ctx.send(embed=embed)
 
     @level.command(name="give")
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def give(self, ctx, user: discord.User, amount):
+    @has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def give(self, ctx: Context, user: User, amount: str) -> None:
         """Give a specific amount of gold to a user."""
 
         try:
             amount = int(amount)
         except ValueError:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description="That doesn't look like a valid number.",
@@ -219,7 +212,7 @@ class Leveling(Cog):
             return await ctx.send(embed=embed)
 
         if amount < 1:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description="I can't give negative gold.",
@@ -231,7 +224,7 @@ class Leveling(Cog):
         stats = await self.db.find_one({"id": user.id})
 
         if stats is None:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
                 description=f"User {user.name} hasn't sent a single message here.",
@@ -244,7 +237,7 @@ class Leveling(Cog):
 
         await self.db.update_one({"id": user.id}, {"$set": {"gold": gold + amount}})
 
-        embed = discord.Embed(
+        embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
             description=f"I gave {amount} gold to {user.name}",
@@ -254,5 +247,6 @@ class Leveling(Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
+def setup(bot: Bot) -> None:
+    """Bot cog load."""
     bot.add_cog(Leveling(bot))

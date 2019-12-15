@@ -152,9 +152,7 @@ class Autorole(Cog):
         if config is None:
             return await ctx.send(embed=embed)
 
-        await self.db.find_one_and_update(
-            {"_id": "autorole-config"}, {"$set": {"roles": []}}
-        )
+        await self.db.find_one_and_update({"_id": "autorole-config"}, {"$set": {"roles": []}})
 
         await ctx.send(embed=embed)
 

@@ -28,9 +28,7 @@ class Leveling(Cog):
             return
 
         try:
-            amount = (await self.db.find_one({"_id": "leveling-config"}))[
-                "amount_per_message"
-            ]
+            amount = (await self.db.find_one({"_id": "leveling-config"}))["amount_per_message"]
         except (KeyError, TypeError):
             return
 
@@ -71,13 +69,7 @@ class Leveling(Cog):
             else:
                 await self.db.update_one(
                     {"id": message.author.id},
-                    {
-                        "$set": {
-                            "gold": new_gold,
-                            "exp": new_exp,
-                            "name": message.author.name,
-                        }
-                    },
+                    {"$set": {"gold": new_gold, "exp": new_exp, "name": message.author.name,}},
                 )
 
     @group(name="level", invoke_without_command=True)
@@ -151,9 +143,7 @@ class Leveling(Cog):
         config = await self.db.find_one({"_id": "leveling-config"})
 
         if config is None:
-            await self.db.insert_one(
-                {"_id": "leveling-config", "amount_per_message": amount}
-            )
+            await self.db.insert_one({"_id": "leveling-config", "amount_per_message": amount})
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",

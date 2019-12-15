@@ -51,9 +51,7 @@ class Embedder(Cog):
         colorcode = colorcode.replace("#", "0x")
 
         await self.db.find_one_and_update(
-            {"_id": "embedcolor-config"},
-            {"$set": {"colorcode": colorcode}},
-            upsert=True,
+            {"_id": "embedcolor-config"}, {"$set": {"colorcode": colorcode}}, upsert=True,
         )
 
         embed = Embed(
@@ -70,9 +68,7 @@ class Embedder(Cog):
     async def send(self, ctx: Context, title: str, *, message: str) -> None:
         """Send an embed."""
         try:
-            colorcode = (await self.db.find_one({"_id": "embedcolor-config"}))[
-                "colorcode"
-            ]
+            colorcode = (await self.db.find_one({"_id": "embedcolor-config"}))["colorcode"]
         except (KeyError, TypeError):
             colorcode = "0x3498DB"  # blue
 

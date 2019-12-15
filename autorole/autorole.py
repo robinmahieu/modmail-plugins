@@ -101,6 +101,7 @@ class Autorole(Cog):
 
         role_ids = [r.id for r in roles]
         role_mentions = [r.mention for r in roles]
+        role_mentions_fmt = ", ".join(role_mentions)
 
         await self.db.find_one_and_update(
             {"_id": "autorole-config"}, {"$set": {"roles": role_ids}}
@@ -109,7 +110,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=_(f"{', '.join(role_mentions)} will now be given to all new members."),
+            description=_(f"{role_mentions_fmt} will now be given to all new members."),
             color=self.bot.main_color,
         )
 

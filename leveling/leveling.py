@@ -51,9 +51,8 @@ class Leveling(Cog):
 
             if person["level"] < level:
                 await message.channel.send(
-                    _(
-                        f"Congratulations, {message.author.mention}, "
-                        f"you advanced to level {level}!"
+                    _("Congratulations, {usser}, you are now level {level}!").format(
+                        user=message.author.mention, level=level
                     )
                 )
 
@@ -94,20 +93,20 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=_(f"User {user.name} hasn't sent a single message here."),
+                description=_("User {name} hasn't sent a single message here.").format(
+                    name=user.name
+                ),
                 color=self.bot.main_color,
             )
 
             return await ctx.send(embed=embed)
 
-        level = stats["level"]
-        exp = stats["exp"]
-        gold = stats["gold"]
-
         embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-            description=_(f"{user.name} is level {level}, has {exp} exp and {gold} gold."),
+            description=_("{name} is level {level}, has {exp} exp and {gold} gold.").format(
+                name=user.name, level=stats["level"], exp=stats["exp"], gold=stats["gold"]
+            ),
             color=self.bot.main_color,
         )
 
@@ -127,7 +126,9 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=_(f"The amount of gold given per message is {amount}."),
+                description=_("The amount of gold given per message is {amount}.").format(
+                    amount=amount
+                ),
                 color=self.bot.main_color,
             )
 
@@ -162,7 +163,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=_(f"I set the amount of gold given to {amount}."),
+                description=_("I set the amount of gold given to {amount}.").format(amount=amount),
                 color=self.bot.main_color,
             )
         else:
@@ -172,7 +173,9 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=_(f"I updated the amount of gold given to {amount}."),
+                description=_("I updated the amount of gold given to {amount}.").format(
+                    amount=amount
+                ),
                 color=self.bot.main_color,
             )
 
@@ -186,7 +189,7 @@ class Leveling(Cog):
         users = self.db.find({}).sort("exp", -1)
 
         embed = Embed(
-            title=_(f"Leaderboard for {ctx.guild.name}"),
+            title=_("Leaderboard for {guild}").format(guild=ctx.guild.name),
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
             colour=self.bot.main_color,
         )
@@ -232,7 +235,9 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=_(f"User {user.name} hasn't sent a single message here."),
+                description=_("User {name} hasn't sent a single message here.").format(
+                    name=user.name
+                ),
                 color=self.bot.main_color,
             )
 
@@ -245,7 +250,7 @@ class Leveling(Cog):
         embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-            description=_(f"I gave {amount} gold to {user.name}"),
+            description=_("I gave {amount} gold to {name}.").format(amount=amount, name=user.name),
             color=self.bot.main_color,
         )
 

@@ -35,7 +35,7 @@ class Purger(Cog):
             return await ctx.send(_("I don't have permission to delete messages here."))
 
         delete_message: Message = await ctx.send(
-            _(f"Successfully deleted {len(deleted)} messages!")
+            _("Successfully deleted {amount} messages!").format(amount=len(deleted))
         )
         await asyncio.sleep(3)
         await delete_message.delete()

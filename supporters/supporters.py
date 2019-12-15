@@ -32,7 +32,7 @@ class Supporters(Cog):
                 title="Supporters",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/supporters",
                 description=_(
-                    f"I couldn't find the modmail category.\nMake sure it's set using the `?config set main_category_id` command."
+                    "I couldn't find the modmail category.\nMake sure it's set using the `?config set main_category_id` command."
                 ),
                 color=self.bot.main_color,
             )

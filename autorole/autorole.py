@@ -101,7 +101,6 @@ class Autorole(Cog):
 
         role_ids = [r.id for r in roles]
         role_mentions = [r.mention for r in roles]
-        role_mentions_fmt = ", ".join(role_mentions)
 
         await self.db.find_one_and_update(
             {"_id": "autorole-config"}, {"$set": {"roles": role_ids}}
@@ -110,7 +109,9 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=_(f"{role_mentions_fmt} will now be given to all new members."),
+            description=_("{roles} will now be given to all new members.").format(
+                roles=", ".join(role_mentions)
+            ),
             color=self.bot.main_color,
         )
 
@@ -131,7 +132,9 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=_(f"Added {role.mention} for {users} members."),
+            description=_("Added {role} for {amount} members.").format(
+                role=role.mention, amount=users
+            ),
             colour=self.bot.main_color,
         )
 
@@ -144,7 +147,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=_(f"Cleared role(s)."),
+            description=_("Cleared role(s)."),
             color=self.bot.main_color,
         )
 

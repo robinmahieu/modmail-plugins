@@ -42,7 +42,9 @@ class Embedder(Cog):
             embed = Embed(
                 title="Embedder",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-                description="Please enter a **valid** [hex code](https://htmlcolorcodes.com/color-picker)",
+                description=_(
+                    "Please enter a **valid** [hex code](https://htmlcolorcodes.com/color-picker)"
+                ),
                 color=self.bot.main_color,
             )
 
@@ -57,7 +59,7 @@ class Embedder(Cog):
         embed = Embed(
             title="Embedder",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-            description="This color will be used for every future embed.",
+            description=_("This color will be used for every future embed."),
             color=Color(int(colorcode, 0)),
         )
 
@@ -96,7 +98,7 @@ class Embedder(Cog):
             embed = Embed(
                 title="Embedder",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-                description="You can only use one image per embed.",
+                description=_("You can only use one image per embed."),
                 color=self.bot.main_color,
             )
 

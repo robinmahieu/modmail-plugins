@@ -109,7 +109,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=f"{', '.join(role_mentions)} will now be given to all new members.",
+            description=_(f"{', '.join(role_mentions)} will now be given to all new members."),
             color=self.bot.main_color,
         )
 
@@ -130,7 +130,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=f"Added {role.mention} for {users} members.",
+            description=_(f"Added {role.mention} for {users} members."),
             colour=self.bot.main_color,
         )
 
@@ -143,7 +143,7 @@ class Autorole(Cog):
         embed = Embed(
             title="Autorole",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/autorole",
-            description=f"Cleared role(s).",
+            description=_(f"Cleared role(s)."),
             color=self.bot.main_color,
         )
 

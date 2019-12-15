@@ -31,7 +31,9 @@ class Supporters(Cog):
             embed = Embed(
                 title="Supporters",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/supporters",
-                description=f"I couldn't find the modmail category.\nMake sure it's set using the `?config set main_category_id` command.",
+                description=_(
+                    f"I couldn't find the modmail category.\nMake sure it's set using the `?config set main_category_id` command."
+                ),
                 color=self.bot.main_color,
             )
 
@@ -50,7 +52,7 @@ class Supporters(Cog):
                         member_list.append(member.mention)
 
         embed = Embed(
-            title="Support Members",
+            title=_("Support Members"),
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/supporters",
             colour=self.bot.main_color,
             description=", ".join(member_list),

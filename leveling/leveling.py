@@ -51,8 +51,10 @@ class Leveling(Cog):
 
             if person["level"] < level:
                 await message.channel.send(
-                    f"Congratulations, {message.author.mention}, "
-                    f"you advanced to level {level}!"
+                    _(
+                        f"Congratulations, {message.author.mention}, "
+                        f"you advanced to level {level}!"
+                    )
                 )
 
                 await self.db.update_one(
@@ -92,22 +94,20 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=f"User {user.name} hasn't sent a single message here.",
+                description=_(f"User {user.name} hasn't sent a single message here."),
                 color=self.bot.main_color,
             )
 
             return await ctx.send(embed=embed)
 
+        level = stats["level"]
+        exp = stats["exp"]
+        gold = stats["gold"]
+
         embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-            description=f"{user.name} is level "
-            + str(stats["level"])
-            + " and has "
-            + str(stats["exp"])
-            + " experience points. They also have "
-            + str(stats["gold"])
-            + " gold.",
+            description=_(f"{user.name} is level {level}, has {exp} exp and {gold} gold."),
             color=self.bot.main_color,
         )
 
@@ -123,11 +123,11 @@ class Leveling(Cog):
                 amount = (await self.db.find_one({"_id": "leveling-config"}))["amount_per_message"]
             except (KeyError, TypeError):
                 return await ctx.send_help(ctx.command)
-            
+
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=f"The amount of gold given per message is {amount}.",
+                description=_(f"The amount of gold given per message is {amount}."),
                 color=self.bot.main_color,
             )
 
@@ -139,7 +139,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description="That doesn't look like a valid number.",
+                description=_("That doesn't look like a valid number."),
                 color=self.bot.main_color,
             )
 
@@ -149,7 +149,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description="I can't give negative gold.",
+                description=_("I can't give negative gold."),
                 color=self.bot.main_color,
             )
 
@@ -162,7 +162,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=f"I set the amount of gold given to {amount}.",
+                description=_(f"I set the amount of gold given to {amount}."),
                 color=self.bot.main_color,
             )
         else:
@@ -172,7 +172,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=f"I updated the amount of gold given to {amount}.",
+                description=_(f"I updated the amount of gold given to {amount}."),
                 color=self.bot.main_color,
             )
 
@@ -186,9 +186,9 @@ class Leveling(Cog):
         users = self.db.find({}).sort("exp", -1)
 
         embed = Embed(
-            title="Leaderboard for " + ctx.guild.name,
-            colour=self.bot.main_color,
+            title=_(f"Leaderboard for {ctx.guild.name}"),
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
+            colour=self.bot.main_color,
         )
 
         for user in await users.to_list(length=11):
@@ -210,7 +210,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description="That doesn't look like a valid number.",
+                description=_("That doesn't look like a valid number."),
                 color=self.bot.main_color,
             )
 
@@ -220,7 +220,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description="I can't give negative gold.",
+                description=_("I can't give negative gold."),
                 color=self.bot.main_color,
             )
 
@@ -232,7 +232,7 @@ class Leveling(Cog):
             embed = Embed(
                 title="Leveling",
                 url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-                description=f"User {user.name} hasn't sent a single message here.",
+                description=_(f"User {user.name} hasn't sent a single message here."),
                 color=self.bot.main_color,
             )
 
@@ -245,7 +245,7 @@ class Leveling(Cog):
         embed = Embed(
             title="Leveling",
             url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
-            description=f"I gave {amount} gold to {user.name}",
+            description=_(f"I gave {amount} gold to {user.name}"),
             color=self.bot.main_color,
         )
 

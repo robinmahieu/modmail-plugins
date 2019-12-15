@@ -32,9 +32,11 @@ class Purger(Cog):
         try:
             deleted = await ctx.channel.purge(limit=amount + 1)
         except Forbidden:
-            return await ctx.send("I don't have permission to delete messages here.")
+            return await ctx.send(_("I don't have permission to delete messages here."))
 
-        delete_message: Message = await ctx.send(f"Successfully deleted {len(deleted)} messages!")
+        delete_message: Message = await ctx.send(
+            _(f"Successfully deleted {len(deleted)} messages!")
+        )
         await asyncio.sleep(3)
         await delete_message.delete()
 

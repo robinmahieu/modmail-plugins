@@ -115,8 +115,23 @@ class Leveling(Cog):
 
     @level.command(name="amount")
     @has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def amount(self, ctx: Context, amount: str) -> None:
+    async def amount(self, ctx: Context, amount: str = "") -> None:
         """Change the amount of gold given to a user per message."""
+
+        if amount == "":
+            try:
+                amount = (await self.db.find_one({"_id": "leveling-config"}))["amount_per_message"]
+            except (KeyError, TypeError):
+                return await ctx.send_help(ctx.command)
+            
+            embed = Embed(
+                title="Leveling",
+                url="https://github.com/papiersnipper/modmail-plugins/blob/master/leveling",
+                description=f"The amount of gold given per message is {amount}.",
+                color=self.bot.main_color,
+            )
+
+            return await ctx.send(embed=embed)
 
         try:
             amount = int(amount)

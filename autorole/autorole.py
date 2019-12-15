@@ -29,7 +29,7 @@ class Autorole(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.db: AsyncIOMotorCollection = bot.plugin_db.get_partition(self)
-        asyncio.create_task(self.migrate())
+        bot.loop.create_task(self.migrate())
 
     async def migrate(self) -> None:
         """Migrates the database model to contain a list of role ID's instead of the ``rolename`` field."""

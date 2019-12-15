@@ -1,0 +1,10 @@
+"Identifier","English","Context"
+"I don't have permission to delete messages here.","I don't have permission to delete messages here.","File: plugins_translations/papiersnipper/purger\purger.py/L35"
+"Successfully deleted {amount} messages!","Successfully deleted {amount} messages!","File: plugins_translations/papiersnipper/purger\purger.py/L38"
+"Delete multiple messages at a time.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/purger)","Delete multiple messages at a time.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/purger)","Cog: Purger"
+"Delete the specified amount of messages.","Delete the specified amount of messages.","Cog: Purger
+Command: purge"
+"Delete the specified amount of messages.","Delete the specified amount of messages.","Cog: Purger
+Command: purge"

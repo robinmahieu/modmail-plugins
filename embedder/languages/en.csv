@@ -1,0 +1,18 @@
+"Identifier","English","Context"
+"This color will be used for every future embed.","This color will be used for every future embed.","File: plugins_translations/papiersnipper/embedder\embedder.py/L62"
+"You can only use one image per embed.","You can only use one image per embed.","File: plugins_translations/papiersnipper/embedder\embedder.py/L101"
+"Easily make embeds for a nicer look.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/embedder)","Easily make embeds for a nicer look.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/embedder)","Cog: Embedder"
+"Easily make embeds for a nicer presence.","Easily make embeds for a nicer presence.","Cog: Embedder
+Command: embedder"
+"Easily make embeds for a nicer presence.","Easily make embeds for a nicer presence.","Cog: Embedder
+Command: embedder"
+"Save an embed colorcode for future embeds.","Save an embed colorcode for future embeds.","Cog: Embedder
+Command: embedder color"
+"Save an embed colorcode for future embeds.","Save an embed colorcode for future embeds.","Cog: Embedder
+Command: embedder color"
+"Send an embed.","Send an embed.","Cog: Embedder
+Command: embedder send"
+"Send an embed.","Send an embed.","Cog: Embedder
+Command: embedder send"

@@ -1,0 +1,23 @@
+"Identifier","English","Context"
+"{roles} will now be given to all new members.","{roles} will now be given to all new members.","File: plugins_translations/papiersnipper/autorole\autorole.py/L112"
+"Added {role} for {amount} members.","Added {role} for {amount} members.","File: plugins_translations/papiersnipper/autorole\autorole.py/L135"
+"Cleared role(s).","Cleared role(s).","File: plugins_translations/papiersnipper/autorole\autorole.py/L150"
+"Auto-assign a role to a user when they join your server.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/autorole)","Auto-assign a role to a user when they join your server.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/autorole)","Cog: Autorole"
+"Auto-assign a role to a user when they join your server.","Auto-assign a role to a user when they join your server.","Cog: Autorole
+Command: autorole"
+"Auto-assign a role to a user when they join your server.","Auto-assign a role to a user when they join your server.","Cog: Autorole
+Command: autorole"
+"Set the default role(s) a member gets when joining.","Set the default role(s) a member gets when joining.","Cog: Autorole
+Command: autorole set"
+"Set the default role(s) a member gets when joining.","Set the default role(s) a member gets when joining.","Cog: Autorole
+Command: autorole set"
+"Give this role to all members of your server.","Give this role to all members of your server.","Cog: Autorole
+Command: autorole give"
+"Give this role to all members of your server.","Give this role to all members of your server.","Cog: Autorole
+Command: autorole give"
+"Clear the default role(s).","Clear the default role(s).","Cog: Autorole
+Command: autorole clear"
+"Clear the default role(s).","Clear the default role(s).","Cog: Autorole
+Command: autorole clear"

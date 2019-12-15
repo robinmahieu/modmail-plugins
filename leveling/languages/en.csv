@@ -1,0 +1,34 @@
+"Identifier","English","Context"
+"Congratulations, {usser}, you are now level {level}!","Congratulations, {usser}, you are now level {level}!","File: plugins_translations/papiersnipper/leveling\leveling.py/L54"
+"User {name} hasn't sent a single message here.","User {name} hasn't sent a single message here.","File: plugins_translations/papiersnipper/leveling\leveling.py/L96/L238"
+"{name} is level {level}, has {exp} exp and {gold} gold.","{name} is level {level}, has {exp} exp and {gold} gold.","File: plugins_translations/papiersnipper/leveling\leveling.py/L107"
+"The amount of gold given per message is {amount}.","The amount of gold given per message is {amount}.","File: plugins_translations/papiersnipper/leveling\leveling.py/L129"
+"That doesn't look like a valid number.","That doesn't look like a valid number.","File: plugins_translations/papiersnipper/leveling\leveling.py/L143/L216"
+"I can't give negative gold.","I can't give negative gold.","File: plugins_translations/papiersnipper/leveling\leveling.py/L153/L226"
+"I set the amount of gold given to {amount}.","I set the amount of gold given to {amount}.","File: plugins_translations/papiersnipper/leveling\leveling.py/L166"
+"I updated the amount of gold given to {amount}.","I updated the amount of gold given to {amount}.","File: plugins_translations/papiersnipper/leveling\leveling.py/L176"
+"Leaderboard for {guild}","Leaderboard for {guild}","File: plugins_translations/papiersnipper/leveling\leveling.py/L192"
+"I gave {amount} gold to {name}.","I gave {amount} gold to {name}.","File: plugins_translations/papiersnipper/leveling\leveling.py/L253"
+"A leveling system for your server: see who's active and who's not.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/leveling)","A leveling system for your server: see who's active and who's not.
+More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/leveling)","Cog: Leveling"
+"A leveling system for your server: see who's active and who's not.","A leveling system for your server: see who's active and who's not.","Cog: Leveling
+Command: level"
+"A leveling system for your server: see who's active and who's not.","A leveling system for your server: see who's active and who's not.","Cog: Leveling
+Command: level"
+"Check someone's current amount of gold, exp and level.","Check someone's current amount of gold, exp and level.","Cog: Leveling
+Command: level info"
+"Check someone's current amount of gold, exp and level.","Check someone's current amount of gold, exp and level.","Cog: Leveling
+Command: level info"
+"Change the amount of gold given to a user per message.","Change the amount of gold given to a user per message.","Cog: Leveling
+Command: level amount"
+"Change the amount of gold given to a user per message.","Change the amount of gold given to a user per message.","Cog: Leveling
+Command: level amount"
+"Check who has the most experience points.","Check who has the most experience points.","Cog: Leveling
+Command: level leaderboard"
+"Check who has the most experience points.","Check who has the most experience points.","Cog: Leveling
+Command: level leaderboard"
+"Give a specific amount of gold to a user.","Give a specific amount of gold to a user.","Cog: Leveling
+Command: level give"
+"Give a specific amount of gold to a user.","Give a specific amount of gold to a user.","Cog: Leveling
+Command: level give"

@@ -1,37 +1,36 @@
-"""
-Supporters plugin for Modmail.
+import discord
+from discord.ext import commands
+from discord.ext.commands import Context
 
-Written by Papiersnipper.
-All rights reserved.
-"""
-
-from discord import Embed
-from discord.ext.commands import Bot, Cog, Context, command
-
-from core.checks import has_permissions
+from core import checks
 from core.models import PermissionLevel
 
 
-class Supporters(Cog):
-    """Let your users know who is part of the support team.
-    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/supporters)
+class Supporters(commands.Cog):
+    """Plugin that gives your server members the ability to view who's
+    part of the support team.
     """
 
-    def __init__(self, bot: Bot) -> None:
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @command(aliases=["helpers", "supporters", "supportmembers"])
-    @has_permissions(PermissionLevel.REGULAR)
-    async def support(self, ctx: Context) -> None:
-        """Send an embed with all the support members."""
+    @commands.command(aliases=["helpers", "supporters", "supportmembers"])
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def support(self, ctx: Context):
+        """View who's part of the support team."""
 
         category_id = self.bot.config.get("main_category_id")
 
         if category_id is None:
-            embed = Embed(
+            description = (
+                "The Modmail category was could not be found.\nPlease make "
+                "sure it has been set with the `?config set "
+                "main_category_id` command."
+            )
+
+            embed = discord.Embed(
                 title="Supporters",
-                url="https://github.com/papiersnipper/modmail-plugins/blob/master/supporters",
-                description=f"I couldn't find the modmail category.\nMake sure it's set using the `?config set main_category_id` command.",
+                description=description,
                 color=self.bot.main_color,
             )
 
@@ -39,26 +38,43 @@ class Supporters(Cog):
 
         categories = self.bot.modmail_guild.categories
 
+        members = {
+            "online": [],
+            "idle": [],
+            "dnd": [],
+            "offline": [],
+        }
+
+        status_fmt = {
+            "online": "Online  🟢",
+            "idle": "Idle  🟡",
+            "dnd": "Do Not Disturb  🔴",
+            "offline": "Offline  ⚪",
+        }
+
         for category in categories:
             if category.id != int(category_id):
                 continue
 
-            member_list = []
             for member in self.bot.modmail_guild.members:
-                if member.permissions_in(category).read_messages:
-                    if not member.bot:
-                        member_list.append(member.mention)
+                if (
+                    member.permissions_in(category).read_messages
+                    and not member.bot
+                ):
+                    members[str(member.status)].append(member.mention)
 
-        embed = Embed(
-            title="Support Members",
-            url="https://github.com/papiersnipper/modmail-plugins/blob/master/supporters",
-            colour=self.bot.main_color,
-            description=", ".join(member_list),
+        embed = discord.Embed(
+            title="Support Members", color=self.bot.main_color,
         )
+
+        for status, member_list in members.items():
+            if member_list:
+                embed.add_field(
+                    name=status_fmt[status], value=", ".join(member_list)
+                )
 
         await ctx.send(embed=embed)
 
 
-def setup(bot: Bot) -> None:
-    """Bot cog load."""
+def setup(bot: commands.Bot):
     bot.add_cog(Supporters(bot))

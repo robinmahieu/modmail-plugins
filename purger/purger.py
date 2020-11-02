@@ -6,7 +6,7 @@ from core.models import PermissionLevel
 
 
 class Purger(commands.Cog):
-    """Plugins that gives the server moderators the ability to delete
+    """Plugin that gives the server moderators the ability to delete
     multiple messages at once.
     """
 

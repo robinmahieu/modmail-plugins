@@ -17,6 +17,7 @@ class Purger(commands.Cog):
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def purge(self, ctx: commands.Context, amount):
         """Delete multiple messages at once."""
+
         try:
             amount = int(amount)
         except ValueError:

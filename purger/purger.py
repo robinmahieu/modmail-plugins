@@ -1,44 +1,51 @@
-"""
-Purger plugin for Modmail.
+import discord
+from discord.ext import commands
 
-Written by Papiersnipper.
-All rights reserved.
-"""
-
-import asyncio
-
-from discord import Forbidden, Message
-from discord.ext.commands import Bot, Cog, Context, command
-
-from core.checks import has_permissions
+from core import checks
 from core.models import PermissionLevel
 
 
-class Purger(Cog):
-    """Delete multiple messages at a time.
-    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/purger)
+class Purger(commands.Cog):
+    """Plugins that gives the server moderators the ability to delete
+    multiple messages at once.
     """
 
-    def __init__(self, bot: Bot) -> None:
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @command()
-    @has_permissions(PermissionLevel.MODERATOR)
-    async def purge(self, ctx: Context, amount: int) -> None:
-        """Delete the specified amount of messages."""
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def purge(self, ctx: commands.Context, amount):
+        """Delete multiple messages at once."""
+        try:
+            amount = int(amount)
+        except ValueError:
+            raise commands.BadArgument(
+                "The amount of messages to delete should be a scrictly "
+                f"positive integer, not `{amount}`."
+            )
+
         if amount < 1:
-            return
+            raise commands.BadArgument(
+                "The amount of messages to delete should be a scrictly "
+                f"positive integer, not `{amount}`."
+            )
 
         try:
             deleted = await ctx.channel.purge(limit=amount + 1)
-        except Forbidden:
-            return await ctx.send("I don't have permission to delete messages here.")
+        except discord.Forbidden:
+            embed = discord.Embed(
+                description="I'm don't have permission to delete messages.",
+                color=self.bot.eror_color
+            )
 
-        delete_message: Message = await ctx.send(f"Successfully deleted {len(deleted)} messages!")
-        await asyncio.sleep(3)
-        await delete_message.delete()
+            return await ctx.send(embed)
+
+        message = f"Successfully deleted {len(deleted)} messages!"
+        to_delete = await ctx.send(message)
+
+        await to_delete.delete(delay=3)
 
 
-def setup(bot: Bot) -> None:
-    """Bot cog load."""
+def setup(bot: commands.Bot):
     bot.add_cog(Purger(bot))

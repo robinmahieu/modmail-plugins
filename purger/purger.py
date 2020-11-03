@@ -36,7 +36,7 @@ class Purger(commands.Cog):
             deleted = await ctx.channel.purge(limit=amount + 1)
         except discord.Forbidden:
             embed = discord.Embed(
-                description="I'm don't have permission to delete messages.",
+                description="I don't have permission to delete messages.",
                 color=self.bot.eror_color
             )
 

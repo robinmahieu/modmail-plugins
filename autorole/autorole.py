@@ -14,7 +14,7 @@ class Autorole(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
+        self.db = self.bot.plugin_db.get_partition(self)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):

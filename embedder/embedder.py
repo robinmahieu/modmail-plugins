@@ -13,7 +13,7 @@ class Embedder(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
+        self.db = self.bot.plugin_db.get_partition(self)
 
     @commands.group(name="embedder", invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.MODERATOR)

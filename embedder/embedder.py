@@ -1,112 +1,85 @@
-"""
-Embedder plugin for Modmail.
-
-Written by Papiersnipper.
-All rights reserved.
-"""
-
 import re
-from datetime import datetime
+import datetime
 
-from discord import Color, Embed, Message
-from discord.ext.commands import Bot, Cog, Context, group
-from motor.motor_asyncio import AsyncIOMotorCollection
-from pyimgur import Imgur
+import discord
+from discord.ext import commands
 
-from core.checks import has_permissions
+from core import checks
 from core.models import PermissionLevel
 
 
-class Embedder(Cog):
-    """Easily make embeds for a nicer look.
-    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/embedder)
-    """
+class Embedder(commands.Cog):
+    """Plugin that gives you the ability to easily embed text."""
 
-    def __init__(self, bot: Bot) -> None:
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.db: AsyncIOMotorCollection = bot.plugin_db.get_partition(self)
+        self.db = bot.plugin_db.get_partition(self)
 
-    @group(name="embedder", aliases=["embed"], invoke_without_command=True)
-    @has_permissions(PermissionLevel.MODERATOR)
-    async def embedder(self, ctx: Context) -> None:
-        """Easily make embeds for a nicer presence."""
+    @commands.group(name="embedder", invoke_without_command=True)
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def embedder(self, ctx: commands.Context):
+        """Easily embed text."""
+
         await ctx.send_help(ctx.command)
 
     @embedder.command(name="color", aliases=["colour"])
-    @has_permissions(PermissionLevel.MODERATOR)
-    async def color(self, ctx: Context, colorcode: str) -> None:
-        """Save an embed colorcode for future embeds."""
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def color(self, ctx: commands.Context, colorcode: str):
+        """Save a hex code for use in embeds."""
+
         is_valid = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", colorcode)
 
         if not is_valid:
-            embed = Embed(
+            link = "https://htmlcolorcodes.com/color-picker"
+
+            embed = discord.Embed(
                 title="Embedder",
-                url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-                description="Please enter a **valid** [hex code](https://htmlcolorcodes.com/color-picker)",
+                description=f"Enter a valid [hex code]({link}).",
                 color=self.bot.main_color,
             )
 
             return await ctx.send(embed=embed)
 
-        colorcode = colorcode.replace("#", "0x")
+        color = discord.Color(int(colorcode.replace("#", "0x"), 0))
 
         await self.db.find_one_and_update(
-            {"_id": "embedcolor-config"}, {"$set": {"colorcode": colorcode}}, upsert=True,
+            {"_id": "embedcolor-config"},
+            {"$set": {"colorcode": colorcode.replace("#", "0x").lower()}},
+            upsert=True,
         )
 
-        embed = Embed(
+        embed = discord.Embed(
             title="Embedder",
-            url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-            description="This color will be used for every future embed.",
-            color=Color(int(colorcode, 0)),
+            description=f"`{color}` will be used for every future embed.",
+            color=color,
         )
 
         await ctx.send(embed=embed)
 
     @embedder.command(name="send", aliases=["make"])
-    @has_permissions(PermissionLevel.MODERATOR)
-    async def send(self, ctx: Context, title: str, *, message: str) -> None:
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def send(self, ctx: commands.Context, title: str, *, message: str):
         """Send an embed."""
-        try:
-            colorcode = (await self.db.find_one({"_id": "embedcolor-config"}))["colorcode"]
-        except (KeyError, TypeError):
-            colorcode = "0x3498DB"  # blue
 
-        embed = Embed(
+        config = await self.db.find_one({"_id": "embedcolor-config"})
+
+        colorcode = config.get("colorcode", str(discord.Color.blue()))
+
+        embed = discord.Embed(
             title=title,
             description=message,
-            color=Color(int(colorcode, 0)),
-            timestamp=datetime.utcnow(),
+            color=discord.Color(int(colorcode, 0)),
+            timestamp=datetime.datetime.utcnow(),
         )
 
-        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
-
-        if len(ctx.message.attachments) == 1:
-            try:
-                imgur = Imgur("0f032be3851849a")
-                image_url = ctx.message.attachments[0].url
-
-                uploaded_image = imgur.upload_image(url=image_url, title="Modmail")
-                embed.set_image(url=uploaded_image.link)
-            except BaseException:
-                pass
-        elif len(ctx.message.attachments) > 1:
-            await ctx.message.delete()
-
-            embed = Embed(
-                title="Embedder",
-                url="https://github.com/papiersnipper/modmail-plugins/blob/master/embedder",
-                description="You can only use one image per embed.",
-                color=self.bot.main_color,
-            )
-
-            error: Message = await ctx.send(embed=embed)
-            return await error.delete(5000)
+        embed.set_author(
+            name=ctx.author.display_name, icon_url=ctx.author.avatar_url
+        )
 
         await ctx.send(embed=embed)
+
         await ctx.message.delete()
 
 
-def setup(bot: Bot) -> None:
-    """Bot cog load."""
+def setup(bot: commands.Bot):
     bot.add_cog(Embedder(bot))

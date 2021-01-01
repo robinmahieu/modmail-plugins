@@ -8,9 +8,7 @@ logger = getLogger(__name__)
 
 
 class Autorole(commands.Cog):
-    """Plugin that gives you the ability to automatically assign roles
-    to users who join your server.
-    """
+    """Plugin to assign roles to members when they join the server."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -18,10 +16,10 @@ class Autorole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        """Function that gets invoked whenever a user joins a server.
+        """Function that gets invoked whenever a member joins a server.
 
-        It will looks for a configuration file in the database and if
-        one is found, the set roles will be assigned to the user.
+        It will look for a configuration file in the database and if
+        one is found, the set roles will be assigned to the new member.
         """
         if member.guild.id != self.bot.guild_id:
             return
@@ -47,7 +45,7 @@ class Autorole(commands.Cog):
     @commands.group(name="autorole", invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def autorole(self, ctx: commands.Context):
-        """Automatically assign roles to users who join your server."""
+        """Assign roles to members when they join the server."""
 
         await ctx.send_help(ctx.command)
 
@@ -56,7 +54,7 @@ class Autorole(commands.Cog):
     async def autorole_set(
         self, ctx: commands.Context, roles: commands.Greedy[discord.Role]
     ):
-        """Set the roles to assign to users who join your server."""
+        """Set the roles to assign to new server members."""
 
         if not roles:
             return await ctx.send_help(ctx.command)
@@ -73,15 +71,11 @@ class Autorole(commands.Cog):
             {"_id": "autorole-config"}, {"$set": {"roles": role_ids}}
         )
 
-        description = (
-            f"{', '.join(role_mentions)} will now be assigned to users who "
-            "join your server."
-        )
+        embed = discord.Embed(title="Autorole", color=self.bot.main_color)
 
-        embed = discord.Embed(
-            title="Autorole",
-            description=description,
-            color=self.bot.main_color,
+        embed.description = (
+            f"{', '.join(role_mentions)} will now be assigned to new server "
+            "members."
         )
 
         await ctx.send(embed=embed)
@@ -89,7 +83,7 @@ class Autorole(commands.Cog):
     @autorole.command(name="give")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def autorole_give(self, ctx: commands.Context, role: discord.Role):
-        """Assign a role to all member of your server."""
+        """Assign a role to all current members of the server."""
 
         members = [
             member
@@ -99,15 +93,11 @@ class Autorole(commands.Cog):
 
         s = "" if len(members) == 1 else "s"
 
-        description = (
-            f"Adding {role.mention} to {len(members)} member{s}!\n"
-            "Please note that this operation might take a while."
-        )
+        embed = discord.Embed(title="Autorole", color=self.bot.main_color)
 
-        embed = discord.Embed(
-            title="Autorole",
-            description=description,
-            color=self.bot.main_color,
+        embed.description = (
+            f"Adding {role.mention} to {len(members)} member{s}!\n"
+            "Please note that this operation may take a while."
         )
 
         await ctx.send(embed=embed)
@@ -126,11 +116,11 @@ class Autorole(commands.Cog):
     @autorole.command(name="clear", aliases=["reset"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def autorole_clear(self, ctx: commands.Context):
-        """Clear the list of roles to assign to users."""
+        """Clear the list of roles to assign to new server members."""
 
         embed = discord.Embed(
             title="Autorole",
-            description="No more roles will be assigned.",
+            description="No roles will be assigned to new server members.",
             color=self.bot.main_color,
         )
 

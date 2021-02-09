@@ -10,7 +10,7 @@ logger = getLogger(__name__)
 class Autorole(commands.Cog):
     """Plugin to assign roles to members when they join the server."""
 
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = self.bot.plugin_db.get_partition(self)
 

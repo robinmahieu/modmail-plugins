@@ -6,25 +6,15 @@ from core.models import PermissionLevel
 
 
 class Purger(commands.Cog):
-    """Plugin that gives the server moderators the ability to delete
-    multiple messages at once.
-    """
+    """Plugin to delete multiple messages at once."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.MODERATOR)
-    async def purge(self, ctx: commands.Context, amount):
+    async def purge(self, ctx: commands.Context, amount: int):
         """Delete multiple messages at once."""
-
-        try:
-            amount = int(amount)
-        except ValueError:
-            raise commands.BadArgument(
-                "The amount of messages to delete should be a scrictly "
-                f"positive integer, not `{amount}`."
-            )
 
         if amount < 1:
             raise commands.BadArgument(
@@ -35,14 +25,16 @@ class Purger(commands.Cog):
         try:
             deleted = await ctx.channel.purge(limit=amount + 1)
         except discord.Forbidden:
-            embed = discord.Embed(
-                description="I don't have permission to delete messages.",
-                color=self.bot.eror_color
+            embed = discord.Embed(color=self.bot.error_color)
+
+            embed.description = (
+                "This command requires the `Manage Messages` permission, "
+                "which the bot does not have at the moment."
             )
 
-            return await ctx.send(embed)
+            return await ctx.send(embed=embed)
 
-        message = f"Successfully deleted {len(deleted)} messages!"
+        message = f"{len(deleted)} messages have been deleted!"
         to_delete = await ctx.send(message)
 
         await to_delete.delete(delay=3)

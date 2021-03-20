@@ -1,237 +1,272 @@
-import logging
-
 import asyncio
+
 import discord
 from discord.ext import commands
 
 from core import checks
-from core.models import PermissionLevel
+from core.models import PermissionLevel, getLogger
 
-Cog = getattr(commands, "Cog", object)
-
-logger = logging.getLogger("Modmail")
+logger = getLogger(__name__)
 
 
-class RoleAssignment(Cog):
-    """Assign roles using reactions.
-    More info: [click here](https://github.com/papiersnipper/modmail-plugins/tree/master/role-assignment)
-    """
+class RoleAssignment(commands.Cog):
+    """Plugin to assign roles with the help of reactions."""
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
-        self.ids = []
-        asyncio.create_task(self.sync())
-        asyncio.create_task(self.api_post())
+        self.db = self.bot.plugin_db.get_partition(self)
 
-    async def api_post(self):
+        asyncio.create_task(self.remove_obsolete_ids())
 
-        async with self.bot.session.post(
-            "https://papiersnipper.herokuapp.com/modmail-plugins/role-assignment/"
-            + str(self.bot.user.id)
-        ):
-            pass
+    async def remove_obsolete_ids(self):
+        """Function that gets invoked whenever this plugin is loaded.
 
-    async def update_db(self):
-
-        await self.db.find_one_and_update({"_id": "role-config"}, {"$set": {"ids": self.ids}})
-
-    async def _set_db(self):
-
+        It will look for a configuration file in the database and
+        remove message IDs that no longer exist, in order to prevent
+        them from cluttering the database.
+        """
         config = await self.db.find_one({"_id": "role-config"})
 
         if config is None:
             return
 
-        self.ids = config["ids"]
+        category_id = int(self.bot.config["main_category_id"] or 0)
 
-    async def sync(self):
-
-        await self._set_db()
-
-        category_id = int(self.bot.config["main_category_id"])
-
-        if category_id is None:
-            print("No main_category_id found!")
+        if category_id == 0:
+            logger.warning("No main_category_id set.")
             return
 
-        guild = self.bot.get_guild(int(self.bot.config["guild_id"]))
+        guild = self.bot.get_guild(int(self.bot.config["guild_id"] or 0))
 
         if guild is None:
-            print("No guild_id found!")
+            logger.warning("No guild_id set.")
             return
 
-        for c in guild.categories:
-            if c.id != category_id:
+        category = discord.utils.get(guild.categories, id=category_id)
+
+        if category is None:
+            logger.warning("Invalid main_category_id set.")
+
+        message_ids = []
+
+        for channel in category.text_channels:
+            thread = await self.bot.threads.find(channel=channel)
+
+            if thread is None:
                 continue
-            else:
-                channel_genesis_ids = []
-                for channel in c.channels:
-                    if not isinstance(channel, discord.TextChannel):
-                        continue
 
-                    if channel.topic is None:
-                        continue
+            if thread.genesis_message is None:
+                messages = await channel.history(oldest_first=True).flatten()
+                thread.genesis_message = messages[0]
 
-                    if channel.topic[:9] != "User ID: ":
-                        continue
+            message_ids.append(str(thread.genesis_message.id))
 
-                    messages = await channel.history(oldest_first=True).flatten()
-                    genesis_message = str(messages[0].id)
-                    channel_genesis_ids.append(genesis_message)
+        await self.db.find_one_and_update(
+            {"_id": "role-config"}, {"$set": {"ids": message_ids}}
+        )
 
-                    if genesis_message not in self.ids:
-                        self.ids.append(genesis_message)
-                    else:
-                        continue
-
-                for id in self.ids:
-                    if id not in channel_genesis_ids:
-                        self.ids.remove(id)
-                    else:
-                        continue
-
-                await self.update_db()
-                logger.info("Synced role with the database")
-
-    @commands.group(name="role", aliases=["roles"], invoke_without_command=True)
+    @commands.group(
+        name="role", aliases=["roles"], invoke_without_command=True
+    )
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def role(self, ctx):
-        """Automaticly assign roles when you click on the emoji."""
+        """Assign roles by clicking a reaction."""
 
         await ctx.send_help(ctx.command)
 
     @role.command(name="add")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, emoji: discord.Emoji, *, role: discord.Role):
-        """Add a clickable emoji to each new message."""
+    async def role_add(self, ctx, emoji: discord.Emoji, *, role: discord.Role):
+        """Add a reaction to each new thread."""
 
         config = await self.db.find_one({"_id": "role-config"})
 
         if config is None:
             await self.db.insert_one({"_id": "role-config", "emoji": {}})
-
             config = await self.db.find_one({"_id": "role-config"})
 
-        emoji_dict = config["emoji"]
-
-        try:
-            emoji_dict[str(emoji.id)]
-            failed = True
-        except KeyError:
-            failed = False
+        failed = config["emoji"].get(str(emoji)) is not None
 
         if failed:
             return await ctx.send("That emoji already assigns a role.")
 
-        emoji_dict[f"<:{emoji.name}:{emoji.id}>"] = role.name
+        config["emoji"][str(emoji)] = role.name
 
-        await self.db.update_one({"_id": "role-config"}, {"$set": {"emoji": emoji_dict}})
+        await self.db.update_one(
+            {"_id": "role-config"}, {"$set": {"emoji": config["emoji"]}}
+        )
 
-        await ctx.send(f'I successfully pointed <:{emoji.name}:{emoji.id}> to "{role.name}"')
+        await ctx.send(f"{emoji} will now assign to the {role.name} role.")
 
     @role.command(name="remove")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: discord.Emoji):
-        """Remove a clickable emoji from each new message."""
+    async def role_remove(self, ctx, emoji: discord.Emoji):
+        """Remove a reaction from each new thread."""
 
         config = await self.db.find_one({"_id": "role-config"})
 
         if config is None:
-            return await ctx.send("There are no emoji set for this server.")
+            return await ctx.send("There are no roles set up at the moment.")
 
-        emoji_dict = config["emoji"]
+        config["emoji"]
 
         try:
-            del emoji_dict[f"<:{emoji.name}:{emoji.id}>"]
+            del config["emoji"][str(emoji)]
         except KeyError:
-            return await ctx.send("That emoji is not configured")
+            return await ctx.send("That emoji doesn't assign any role.")
 
-        await self.db.update_one({"_id": "role-config"}, {"$set": {"emoji": emoji_dict}})
+        await self.db.update_one(
+            {"_id": "role-config"}, {"$set": {"emoji": config["emoji"]}}
+        )
 
-        await ctx.send(f"I successfully deleted <:{emoji.name}:{emoji.id}>.")
+        await ctx.send(f"The {emoji} emoji has been unlinked.")
 
-    @Cog.listener()
-    async def on_thread_ready(self, thread):
+    @role.command(name="list")
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def role_list(self, ctx):
+        """View a list of reactions added to each new thread message."""
+
+        config = await self.db.find_one({"_id": "role-config"})
+
+        if config is None:
+            return await ctx.send("There are no roles set up at the moment.")
+
+        embed = discord.Embed(
+            title="Role Assignment", color=self.bot.main_color, description=""
+        )
+
+        for emoji, role_name in config["emoji"].items():
+            role = discord.utils.get(ctx.guild.roles, name=role_name)
+
+            embed.description += f"{emoji} — {role.mention}\n"
+
+        await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_ready(
+        self, thread, creator, category, initial_message
+    ):
+        """Function that gets invoked whenever a new thread is created.
+
+        It will look for a configuration file in the database and add
+        all emoji as reactions to the genesis message. Furthermore, it
+        will update the list of genesis message IDs.
+        """
         message = thread.genesis_message
 
-        try:
-            for k, v in (await self.db.find_one({"_id": "role-config"}))["emoji"].items():
-                await message.add_reaction(k)
-        except TypeError:
+        config = await self.db.find_one({"_id": "role-config"})
+
+        if config is None:
             return
 
-        self.ids.append(str(message.id))
-        await self.update_db()
+        for emoji in config["emoji"].keys():
+            await message.add_reaction(emoji)
 
-    @Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        config["ids"].append(str(message.id))
 
-        await asyncio.sleep(1)
+        await self.db.find_one_and_update(
+            {"_id": "role-config"}, {"$set": {"ids": config["ids"]}}
+        )
 
-        if str(payload.message_id) not in self.ids:
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(
+        self, payload: discord.RawReactionActionEvent
+    ):
+        """Function that gets invoked whenever a reaction is added.
+
+        It will look for a configuration file in the database and
+        update the member's role according to the added emoji.
+        """
+        config = await self.db.find_one({"_id": "role-config"})
+
+        if config is None:
             return
 
-        guild_id = payload.guild_id
-        guild: discord.Guild = discord.utils.find(lambda g: g.id == guild_id, self.bot.guilds)
+        if str(payload.message_id) not in config["ids"]:
+            return
+
+        if str(payload.emoji) not in config["emoji"].keys():
+            return
 
         if payload.user_id == self.bot.user.id:
             return
 
-        member_id = int(guild.get_channel(payload.channel_id).topic[9:])
+        channel = self.bot.get_channel(payload.channel_id)
+        thread = await self.bot.threads.find(channel=channel)
 
-        role = (await self.db.find_one({"_id": "role-config"}))["emoji"][
-            f"<:{payload.emoji.name}:{payload.emoji.id}>"
-        ]
-
-        role = discord.utils.get(guild.roles, name=role)
-
-        if role is None:
-            return await guild.get_channel(payload.channel_id).send("I couldn't find that role...")
-
-        for m in guild.members:
-            if m.id == member_id:
-                member = m
-            else:
-                continue
-
-        await member.add_roles(role)
-        await guild.get_channel(payload.channel_id).send(
-            f"Successfully added {role} to {member.name}"
-        )
-
-    @Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-
-        await asyncio.sleep(1)
-
-        if str(payload.message_id) not in self.ids:
+        if thread is None:
             return
 
-        guild_id = payload.guild_id
-        guild = discord.utils.find(lambda g: g.id == guild_id, self.bot.guilds)
+        user = thread.recipient
 
-        member_id = int(guild.get_channel(payload.channel_id).topic[9:])
+        if not isinstance(user, int):
+            user = user.id
 
-        role = (await self.db.find_one({"_id": "role-config"}))["emoji"][
-            f"<:{payload.emoji.name}:{payload.emoji.id}>"
-        ]
+        member = channel.guild.get_member(user)
 
-        role = discord.utils.get(guild.roles, name=role)
+        role_name = config["emoji"][str(payload.emoji)]
+        role = discord.utils.get(channel.guild.roles, name=role_name)
 
         if role is None:
-            return await guild.get_channel(payload.channel_id).send("Configured role not found.")
+            message = (
+                f"The role associated with {payload.emoji} ({role_name}) "
+                "could not be found."
+            )
 
-        for m in guild.members:
-            if m.id == member_id:
-                member = m
-            else:
-                continue
+            await channel.send(message)
+
+        await member.add_roles(role)
+
+        await channel.send(f"The {role} role has been added to {member}.")
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(
+        self, payload: discord.RawReactionActionEvent
+    ):
+        """Function that gets invoked whenever a reaction is removed.
+
+        It will look for a configuration file in the database and
+        update the member's role according to the removed emoji.
+        """
+        config = await self.db.find_one({"_id": "role-config"})
+
+        if config is None:
+            return
+
+        if str(payload.message_id) not in config["ids"]:
+            return
+
+        if str(payload.emoji) not in config["emoji"].keys():
+            return
+
+        if payload.user_id == self.bot.user.id:
+            return
+
+        channel = self.bot.get_channel(payload.channel_id)
+        thread = await self.bot.threads.find(channel=channel)
+
+        if thread is None:
+            return
+
+        user = thread.recipient
+
+        if not isinstance(user, int):
+            user = user.id
+
+        member = channel.guild.get_member(user)
+
+        role_name = config["emoji"][str(payload.emoji)]
+        role = discord.utils.get(channel.guild.roles, name=role_name)
+
+        if role is None:
+            await channel.send(
+                f"The role associated with {payload.emoji} ({role_name}) "
+                "could not be found."
+            )
 
         await member.remove_roles(role)
-        await guild.get_channel(payload.channel_id).send(
-            f"Successfully removed {role} from {member.name}"
-        )
+
+        await channel.send(f"The {role} role has been removed from {member}.")
 
 
 def setup(bot):

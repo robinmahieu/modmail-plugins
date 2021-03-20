@@ -10,7 +10,7 @@ logger = getLogger(__name__)
 
 
 class RoleAssignment(commands.Cog):
-    """Plugin to assign roles with the help of reactions."""
+    """Plugin to assign roles by clicking reactions."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -96,7 +96,7 @@ class RoleAssignment(commands.Cog):
             {"_id": "role-config"}, {"$set": {"emoji": config["emoji"]}}
         )
 
-        await ctx.send(f"{emoji} will now assign to the {role.name} role.")
+        await ctx.send(f"{emoji} will now assign the {role.name} role.")
 
     @role.command(name="remove")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -124,7 +124,7 @@ class RoleAssignment(commands.Cog):
     @role.command(name="list")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def role_list(self, ctx):
-        """View a list of reactions added to each new thread message."""
+        """View a list of reactions added to each new thread."""
 
         config = await self.db.find_one({"_id": "role-config"})
 

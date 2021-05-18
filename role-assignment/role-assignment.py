@@ -82,7 +82,7 @@ class RoleAssignment(commands.Cog):
         config = await self.db.find_one({"_id": "role-config"})
 
         if config is None:
-            await self.db.insert_one({"_id": "role-config", "emoji": {}})
+            await self.db.insert_one({"_id": "role-config", "emoji": {}, "ids": []})
             config = await self.db.find_one({"_id": "role-config"})
 
         failed = config["emoji"].get(str(emoji)) is not None

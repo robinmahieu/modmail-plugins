@@ -36,7 +36,7 @@ class RoleAssignment(commands.Cog):
             logger.warning("No main_category_id set.")
             return
 
-        guild = self.bot.get_guild(int(self.bot.config["guild_id"] or 0))
+        guild = self.bot.modmail_guild
 
         if guild is None:
             logger.warning("No guild_id set.")
@@ -136,7 +136,7 @@ class RoleAssignment(commands.Cog):
         )
 
         for emoji, role_name in config["emoji"].items():
-            role = discord.utils.get(ctx.guild.roles, name=role_name)
+            role = discord.utils.get(self.bot.guild.roles, name=role_name)
 
             embed.description += f"{emoji} — {role.mention}\n"
 
@@ -202,10 +202,10 @@ class RoleAssignment(commands.Cog):
         if not isinstance(user, int):
             user = user.id
 
-        member = channel.guild.get_member(user)
+        member = self.bot.guild.get_member(user)
 
         role_name = config["emoji"][str(payload.emoji)]
-        role = discord.utils.get(channel.guild.roles, name=role_name)
+        role = discord.utils.get(self.bot.guild.roles, name=role_name)
 
         if role is None:
             message = (
@@ -253,10 +253,10 @@ class RoleAssignment(commands.Cog):
         if not isinstance(user, int):
             user = user.id
 
-        member = channel.guild.get_member(user)
+        member = self.bot.guild.get_member(user)
 
         role_name = config["emoji"][str(payload.emoji)]
-        role = discord.utils.get(channel.guild.roles, name=role_name)
+        role = discord.utils.get(self.bot.guild.roles, name=role_name)
 
         if role is None:
             await channel.send(

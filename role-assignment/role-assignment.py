@@ -242,7 +242,10 @@ class RoleAssignment(commands.Cog):
             return
 
         if str(payload.emoji) not in config["emoji"].keys():
-            return
+            payload.emoji.animated = True
+
+            if str(payload.emoji) not in config["emoji"].keys():
+                return
 
         if payload.user_id == self.bot.user.id:
             return

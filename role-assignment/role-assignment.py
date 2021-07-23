@@ -14,7 +14,8 @@ class RoleAssignment(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = self.bot.plugin_db.get_partition(self)
+
+        self.db = self.bot.api.get_plugin_partition(self)
 
         asyncio.create_task(self.remove_obsolete_ids())
 

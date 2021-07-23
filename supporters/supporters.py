@@ -21,8 +21,8 @@ class Supporters(commands.Cog):
 
         if category_id is None:
             description = (
-                "The Modmail category was could not be found.\nPlease make "
-                "sure it has been set with the `?config set "
+                "The Modmail category could not be found.\nPlease make sure "
+                "that it has been set correctly with the `?config set "
                 "main_category_id` command."
             )
 

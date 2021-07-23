@@ -62,7 +62,7 @@ class Supporters(commands.Cog):
                     members[str(member.status)].append(member.mention)
 
         embed = discord.Embed(
-            title="Support Members", color=self.bot.main_color,
+            title="Support Members", color=self.bot.main_color
         )
 
         for status, member_list in members.items():

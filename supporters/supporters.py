@@ -46,10 +46,10 @@ class Supporters(commands.Cog):
         }
 
         status_fmt = {
-            "online": "Online  🟢",
-            "idle": "Idle  🟡",
-            "dnd": "Do Not Disturb  🔴",
-            "offline": "Offline  ⚪",
+            "online": "Online 🟢",
+            "idle": "Idle 🟡",
+            "dnd": "Do Not Disturb 🔴",
+            "offline": "Offline ⚪",
         }
 
         for category in categories:

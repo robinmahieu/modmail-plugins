@@ -7,9 +7,7 @@ from core.models import PermissionLevel
 
 
 class Supporters(commands.Cog):
-    """Plugin that gives your server members the ability to view who's
-    part of the support team.
-    """
+    """Plugin to view which members are part of the support team."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -17,7 +15,7 @@ class Supporters(commands.Cog):
     @commands.command(aliases=["helpers", "supporters", "supportmembers"])
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def support(self, ctx: Context):
-        """View who's part of the support team."""
+        """View which members are part of the support team."""
 
         category_id = self.bot.config.get("main_category_id")
 

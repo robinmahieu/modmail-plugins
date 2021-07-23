@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 class RoleAssignment(commands.Cog):
     """Plugin to assign roles by clicking reactions."""
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
         self.db = self.bot.api.get_plugin_partition(self)
@@ -278,5 +278,5 @@ class RoleAssignment(commands.Cog):
         await channel.send(f"The {role} role has been removed from {member}.")
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(RoleAssignment(bot))

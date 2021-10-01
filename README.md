@@ -41,3 +41,7 @@ Please note that this plugin does not provide the usual reaction roles.
 ### Supporters
 
 This plugin is intended to view which members are part of the support team.
+
+## Contributing
+
+This project is licensed under the terms of the MIT license.

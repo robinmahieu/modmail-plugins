@@ -17,9 +17,9 @@ class Supporters(commands.Cog):
     async def support(self, ctx: Context):
         """View which members are part of the support team."""
 
-        category_id = self.bot.config.get("main_category_id")
+        category = self.bot.main_category
 
-        if category_id is None:
+        if category is None:
             description = (
                 "The Modmail category could not be found.\nPlease make sure "
                 "that it has been set correctly with the `?config set "
@@ -33,8 +33,6 @@ class Supporters(commands.Cog):
             )
 
             return await ctx.send(embed=embed)
-
-        categories = self.bot.modmail_guild.categories
 
         members = {
             "online": [],
@@ -50,16 +48,13 @@ class Supporters(commands.Cog):
             "offline": "Offline ⚪",
         }
 
-        for category in categories:
-            if category.id != int(category_id):
-                continue
 
-            for member in self.bot.modmail_guild.members:
-                if (
-                    member.permissions_in(category).read_messages
-                    and not member.bot
-                ):
-                    members[str(member.status)].append(member.mention)
+        for member in self.bot.modmail_guild.members:
+            if (
+                member.permissions_in(category).read_messages
+                and not member.bot
+            ):
+                members[str(member.status)].append(member.mention)
 
         embed = discord.Embed(
             title="Support Members", color=self.bot.main_color

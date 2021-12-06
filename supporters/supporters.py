@@ -48,7 +48,6 @@ class Supporters(commands.Cog):
             "offline": "Offline ⚪",
         }
 
-
         for member in self.bot.modmail_guild.members:
             if (
                 member.permissions_in(category).read_messages

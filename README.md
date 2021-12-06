@@ -10,15 +10,13 @@ The most popular variation is [the one by kyb3r][kyb3r-modmail]. These plugins e
 
 ## Plugins
 
-Each plugin has a specific purpose, which is listed is further detail below.
-
-You can install one of the plugins by using the following command.
+Each plugin has a specific purpose, listed in further detail below. You can install one of them by using the following command.
 
 ```sh
-?plugins add robinmahieu/modmail-plugins/plugin-name
+?plugins add robinmahieu/modmail-plugins/plugin-name@stardust
 ```
 
-Make sure to change the `plugin-name` at the end with `autorole`, `embedder`, `purger`, `role-assignment` or `supporters`.
+Make sure to change the `plugin-name` dummy variable to a valid plugin name, like `autorole`, `embedder`, `purger`, `role-assignment` or `supporters`. Keep in mind that the default branch of this repository has an unconventional name and should be stated explicitly . If not, an `InvalidPluginError` is raised when trying to install one of these plugins.
 
 ### Autorole
 

@@ -56,11 +56,13 @@ class RoleAssignment(commands.Cog):
             if thread is None:
                 continue
 
-            if thread.genesis_message is None:
-                messages = await channel.history(oldest_first=True).flatten()
-                thread.genesis_message = messages[0]
+            if thread._genesis_message is None:
+                history = channel.history(oldest_first=True)
+                thread._genesis_message = [
+                    message async for message in history
+                ][0]
 
-            message_ids.append(str(thread.genesis_message.id))
+            message_ids.append(str(thread._genesis_message.id))
 
         await self.db.find_one_and_update(
             {"_id": "role-config"}, {"$set": {"ids": message_ids}}
@@ -152,10 +154,10 @@ class RoleAssignment(commands.Cog):
         """Function that gets invoked whenever a new thread is created.
 
         It will look for a configuration file in the database and add
-        all emoji as reactions to the genesis message. Furthermore, it
-        will update the list of genesis message IDs.
+        all emoji as reactions to the _genesis message. Furthermore, it
+        will update the list of _genesis message IDs.
         """
-        message = thread.genesis_message
+        message = thread._genesis_message
 
         config = await self.db.find_one({"_id": "role-config"})
 
@@ -278,5 +280,5 @@ class RoleAssignment(commands.Cog):
         await channel.send(f"The {role} role has been removed from {member}.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(RoleAssignment(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(RoleAssignment(bot))

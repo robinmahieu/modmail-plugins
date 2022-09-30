@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 
 from core import checks
-from core.models import PermissionLevel
+from core.models import PermissionLevel, getLogger
+
+logger = getLogger(__name__)
 
 
 class Purger(commands.Cog):
@@ -34,11 +36,16 @@ class Purger(commands.Cog):
 
             return await ctx.send(embed=embed)
 
+        logger.debug(
+            f"{ctx.author} purged {len(deleted)} messages in the "
+            f"#{ctx.channel} channel."
+        )  # len(deleted) >= 2 so no plural checks necessary
+
         message = f"{len(deleted)} messages have been deleted!"
         to_delete = await ctx.send(message)
 
         await to_delete.delete(delay=3)
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Purger(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Purger(bot))

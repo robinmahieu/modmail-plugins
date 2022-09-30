@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context
 
 from core import checks
 from core.models import PermissionLevel
@@ -14,7 +13,7 @@ class Supporters(commands.Cog):
 
     @commands.command(aliases=["helpers", "supporters", "supportmembers"])
     @checks.has_permissions(PermissionLevel.REGULAR)
-    async def support(self, ctx: Context):
+    async def support(self, ctx: commands.Context):
         """View which members are part of the support team."""
 
         category = self.bot.main_category
@@ -50,7 +49,7 @@ class Supporters(commands.Cog):
 
         for member in self.bot.modmail_guild.members:
             if (
-                member.permissions_in(category).read_messages
+                category.permissions_for(member).read_messages
                 and not member.bot
             ):
                 members[str(member.status)].append(member.mention)
@@ -68,5 +67,5 @@ class Supporters(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Supporters(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Supporters(bot))

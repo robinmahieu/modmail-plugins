@@ -17,31 +17,43 @@ class Autorole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        """Function that gets invoked whenever a member joins a server.
+        """Function that executes when a member joins a server.
 
-        It will look for a configuration file in the database and if
-        one is found, the set roles will be assigned to the new member.
+        It looks for an autorole configuration file in the database. If
+        one is found, the conigured set of roles will be assigned to
+        the new member.
         """
         if member.guild.id != self.bot.guild_id:
             return
 
         config = await self.db.find_one({"_id": "autorole-config"})
 
-        if config is None:
+        if not config:
             return
 
         try:
             role_ids = config["roles"]
         except KeyError:
-            return logger.error("Something went wrong in the database!")
+            return logger.error(
+                "Something went wrong in the database! The `roles` field "
+                "could not be found in the configuration file."
+            )
 
-        if not role_ids:
-            return
+        if not isinstance(role_ids, list):
+            return logger.error(
+                "Something went wrong in the database! The `roles` field "
+                "in the configuration file has an invalid format."
+            )
 
-        roles = [member.guild.get_role(role_id) for role_id in role_ids]
-        roles = [role for role in roles if role is not None]
+        roles = [
+            role
+            for role_id in role_ids
+            if (role := member.guild.get_role(role_id))
+        ]
 
         await member.add_roles(*roles)
+
+        logger.debug(f"Added configured roles to new member {member}.")
 
     @commands.group(name="autorole", invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -62,7 +74,7 @@ class Autorole(commands.Cog):
 
         config = await self.db.find_one({"_id": "autorole-config"})
 
-        if config is None:
+        if not config:
             await self.db.insert_one({"_id": "autorole-config"})
 
         role_ids = [role.id for role in roles]
@@ -98,7 +110,7 @@ class Autorole(commands.Cog):
 
         embed.description = (
             f"Adding {role.mention} to {len(members)} member{s}!\n"
-            "Please note that this operation may take a while."
+            "Please note that this operation could take a while."
         )
 
         await ctx.send(embed=embed)
@@ -127,7 +139,7 @@ class Autorole(commands.Cog):
 
         config = await self.db.find_one({"_id": "autorole-config"})
 
-        if config is None:
+        if not config:
             return await ctx.send(embed=embed)
 
         await self.db.find_one_and_update(
@@ -137,5 +149,5 @@ class Autorole(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Autorole(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Autorole(bot))

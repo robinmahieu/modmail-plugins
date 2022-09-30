@@ -1,5 +1,5 @@
-import re
 import datetime
+import re
 
 import discord
 from discord.ext import commands
@@ -9,7 +9,7 @@ from core.models import PermissionLevel
 
 
 class Embedder(commands.Cog):
-    """Plugin that gives you the ability to easily embed text."""
+    """Plugin to easily embed text."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -64,17 +64,20 @@ class Embedder(commands.Cog):
 
         config = await self.db.find_one({"_id": "embedcolor-config"})
 
-        colorcode = config.get("colorcode", str(discord.Color.blue()))
+        if config:
+            colorcode = config.get("colorcode", str(discord.Color.blue()))
+        else:
+            colorcode = str(discord.Color.blue())
 
         embed = discord.Embed(
             title=title,
             description=message,
-            color=discord.Color(int(colorcode, 0)),
+            color=discord.Color(int(colorcode.replace("#", "0x"), 0)),
             timestamp=datetime.datetime.utcnow(),
         )
 
         embed.set_author(
-            name=ctx.author.display_name, icon_url=ctx.author.avatar_url
+            name=ctx.author.display_name, icon_url=ctx.author.avatar.url
         )
 
         await ctx.send(embed=embed)
@@ -82,5 +85,5 @@ class Embedder(commands.Cog):
         await ctx.message.delete()
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Embedder(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Embedder(bot))

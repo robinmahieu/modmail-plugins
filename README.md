@@ -2,21 +2,25 @@
 
 This repository hosts several custom plugins for Modmail.
 
-## Modwhat?
+## Mod-what?
 
-Modmail is a bot for [Discord][discord] that provides a shared inbox for server staff to communicate with their users.
+Modmail is a bot for [Discord][discord] that provides a shared inbox for server staff and regular members to communicate with each other.
 
-The most popular adaptation is [the one by Kyber][kyb3r-modmail]. These plugins extend the functionality of the bot, by providing supplementary cogs.
+The most popular adaptation is [the one by Kyber][kyb3r-modmail]. These plugins extend the functionality of that bot, by providing additional commands.
+
+Currently, all of the plugins support Modmail version 4.0.0 and higher.
 
 ## Plugins
 
-Each plugin has a distinct purpose, as described below. You can install one of them by using the following command.
+Each plugin has a distinct purpose, as described below. After installing one of the plugins, a dedicated page in the help menu provides more information about its commands.
+
+You can install a plugin by using the following command.
 
 ```sh
 ?plugins add robinmahieu/modmail-plugins/plugin-name@stardust
 ```
 
-Make sure to change the `plugin-name` dummy variable to a valid plugin name, like `autorole`, `embedder`, `purger`, `role-assignment` or `supporters`. Keep in mind that the default branch of this repository has an unconventional name and should be stated explicitly. If not, an `InvalidPluginError` is raised when trying to install one of these plugins.
+Make sure to replace the `plugin-name` dummy variable with a valid plugin name, like `autorole`, `embedder`, `purger`, `role-assignment` or `supporters`. Keep in mind that the default branch of this repository has an unconventional name and should be stated explicitly. If not, an `InvalidPluginError` is raised when trying to install one of these plugins.
 
 ### Autorole
 
@@ -34,7 +38,7 @@ This plugin is intended to delete multiple messages at once.
 
 This plugin is intended to assign roles by clicking reactions.
 
-Please note that this plugin does not provide the usual reaction roles.
+Please note that this plugin does not provide the usual reaction roles. Instead, it allows server staff to assign roles to regular members when they open a thread. This could be useful when roles are only supposed to be assigned after explicit approval.
 
 ### Supporters
 

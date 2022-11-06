@@ -53,10 +53,16 @@ class StaleAlert(commands.Cog):
             most_recent_message = None
 
             for thread_message in thread["messages"]:
-                if thread_message["type"] == "thread_message":
+                if thread_message["type"] == "thread_message" or (
+                    thread_message["type"] == "system"
+                    and int(thread_message["author"]["id"]) == self.bot.user.id
+                ):
                     most_recent_message = thread_message
 
-            if most_recent_message["author"]["mod"]:
+            if (
+                thread_message["type"] == "thread_message"
+                and most_recent_message["author"]["mod"]
+            ):
                 continue
 
             timestamp = datetime.datetime.fromisoformat(

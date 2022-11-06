@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 import discord
 from discord.ext import commands, tasks
@@ -44,6 +45,7 @@ class StaleAlert(commands.Cog):
             )
 
         message = config.get("message", "alert")
+        ignore = config.get("ignore", [])
 
         open_threads = await self.bot.api.get_open_logs()
 
@@ -76,16 +78,21 @@ class StaleAlert(commands.Cog):
                 recipient = self.bot.get_user(int(thread["recipient"]["id"]))
 
                 if not channel:
-                    return logger.warning(
+                    logger.warning(
                         "Found an open thread without a valid channel ID: "
                         f"{thread['key']}."
                     )
+                    continue
 
                 if not recipient:
-                    return logger.warning(
+                    logger.warning(
                         "Found an open thread without a valid recipient ID: "
                         f"{thread['key']}."
                     )
+                    continue
+
+                if channel.id in ignore or channel.category.id in ignore:
+                    continue
 
                 sent_message = await channel.send(message)
                 await self.bot.api.append_log(sent_message, type_="system")
@@ -104,6 +111,100 @@ class StaleAlert(commands.Cog):
         """Alert when tickets are going stale."""
 
         await ctx.send_help(ctx.command)
+
+    @stale.command(name="ignore")
+    @checks.has_permissions(PermissionLevel.SUPPORTER)
+    async def stale_ignore(
+        self,
+        ctx: commands.Context,
+        *,
+        channel: Union[discord.TextChannel, discord.CategoryChannel] = None,
+    ):
+        """Disable the stale alerts in a certain channel or category."""
+
+        if not channel:
+            channel = ctx.channel
+
+        config = await self.db.find_one({"_id": "stale-alert-config"})
+
+        if not config:
+            await self.db.insert_one({"_id": "stale-alert-config"})
+
+        ignore_list = config.get("ignore", [])
+
+        if channel.id in ignore_list:
+            return await ctx.send(
+                "That channel or category is already being ignored."
+            )
+
+        ignore_list.append(channel.id)
+
+        await self.db.find_one_and_update(
+            {"_id": "stale-alert-config"}, {"$set": {"ignore": ignore_list}}
+        )
+
+        message = f"The <#{channel.id}> channel"
+
+        if channel == ctx.channel:
+            message = "This channel"
+
+        if isinstance(channel, discord.CategoryChannel):
+            message = f"The {channel.name} category"
+
+        embed = discord.Embed(
+            title="Stale Alert",
+            color=self.bot.main_color,
+            description=f"{message} is now ignored.",
+        )
+
+        await ctx.send(embed=embed)
+
+    @stale.command(name="unignore")
+    @checks.has_permissions(PermissionLevel.SUPPORTER)
+    async def stale_unignore(
+        self,
+        ctx: commands.Context,
+        *,
+        channel: Union[discord.TextChannel, discord.CategoryChannel] = None,
+    ):
+        """Re-enable the stale alerts in a certain channel or category."""
+
+        if not channel:
+            channel = ctx.channel
+
+        config = await self.db.find_one({"_id": "stale-alert-config"})
+
+        if not config:
+            await self.db.insert_one({"_id": "stale-alert-config"})
+
+        ignore_list = config.get("ignore", [])
+
+        if channel.id not in ignore_list:
+            return await ctx.send(
+                "That channel or category is not being ignored."
+            )
+
+        ignore_list.remove(channel.id)
+
+        await self.db.find_one_and_update(
+            {"_id": "stale-alert-config"}, {"$set": {"ignore": ignore_list}}
+        )
+
+        message = f"The <#{channel.id}> channel"
+
+        if channel == ctx.channel:
+            message = "This channel"
+
+        if isinstance(channel, discord.CategoryChannel):
+            message = f"The {channel.name} category"
+
+        embed = discord.Embed(
+            title="Stale Alert",
+            color=self.bot.main_color,
+            description=f"{message} is no longer ignored.",
+        )
+
+        await ctx.send(embed=embed)
 
     @stale.command(name="message")
     @checks.has_permissions(PermissionLevel.MODERATOR)

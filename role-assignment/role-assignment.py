@@ -165,7 +165,10 @@ class RoleAssignment(commands.Cog):
             return
 
         for emoji in config["emoji"].keys():
-            await message.add_reaction(emoji)
+            stripped_emoji = emoji.strip(
+                "<:>"
+            )  # unannounced Discord API breaking change >:(
+            await message.add_reaction(stripped_emoji)
 
         config["ids"].append(str(message.id))
 

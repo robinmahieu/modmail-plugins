@@ -6,7 +6,7 @@ This repository hosts several custom plugins for Modmail.
 
 Modmail is a bot for [Discord][discord] that provides a shared inbox for server staff and regular members to communicate with each other.
 
-The most popular adaptation is [the one by Kyber][kyb3r-modmail]. These plugins extend the functionality of that bot, by providing additional commands.
+These plugins extend the functionality of the [https://github.com/modmail-dev/Modmail][modmail] adaptation, by providing additional commands.
 
 Currently, all of the plugins support Modmail version 4.0.0 and higher.
 
@@ -50,4 +50,4 @@ This project is licensed under the terms of the [MIT][mit-license] license.
 
 [discord]: <https://discord.com/>
 [mit-license]: <https://github.com/robinmahieu/modmail-plugins/blob/stardust/LICENSE>
-[kyb3r-modmail]: <https://github.com/kyb3r/modmail>
+[modmail]: <https://github.com/modmail-dev/Modmail>
